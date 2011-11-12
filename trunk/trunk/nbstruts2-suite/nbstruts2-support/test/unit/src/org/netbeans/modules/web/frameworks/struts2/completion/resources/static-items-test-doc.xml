@@ -1,0 +1,1 @@
+<!DOCTYPE struts PUBLIC"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN""http://struts.apache.org/dtds/struts-2.0.dtd"><struts>    <bean scope="" static="" optional=""/>    <package abstract="">    </package></struts>
