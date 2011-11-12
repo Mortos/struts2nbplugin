@@ -1,0 +1,26 @@
+<#assign licenseFirst = "/*">
+<#assign licensePrefix = " * ">
+<#assign licenseLast = " */">
+<#include "../Licenses/license-${project.license}.txt">
+
+<#if package?? && package != "">
+package ${package};
+</#if>
+
+import com.opensymphony.xwork2.ActionSupport;
+
+/**
+ *
+ * @author ${user}
+ */
+
+public class ${name} extends ActionSupport {
+
+    public ${name}() {
+    }
+
+    public String execute() throws Exception {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+}
