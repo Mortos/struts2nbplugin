@@ -31,11 +31,11 @@ public class XWorkValidatorStaticAttributeValueCompletor implements XWorkValidat
         VALUE_COMPLETION_MAP.put("field-validator", fieldValidatorAttributes);
     }
 
-    public XWorkValidatorStaticAttributeValueCompletor(XWorkValidatorCompletionContext context) {
+    public XWorkValidatorStaticAttributeValueCompletor(XWorkValidatorValueCompletionContext context) {
         typedText = context.typedText().toString();
         Map<CharSequence, String[]> attributeChoises = VALUE_COMPLETION_MAP.get(context.tagName());
         if (attributeChoises != null) {
-            choises = attributeChoises.get(context.getAttributeName());
+            choises = attributeChoises.get(context.attributeName());
             if (choises != null) {
                 return;
             }

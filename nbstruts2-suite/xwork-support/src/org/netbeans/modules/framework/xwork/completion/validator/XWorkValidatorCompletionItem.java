@@ -37,7 +37,7 @@ public class XWorkValidatorCompletionItem implements CompletionItem {
             Document document = textComponent.getDocument();
             int caretOffset = textComponent.getCaretPosition();
 
-            XWorkValidatorCompletionContext context = new XWorkValidatorCompletionContext(document, caretOffset);
+            XWorkValidatorValueCompletionContext context = new XWorkValidatorValueCompletionContext(document, caretOffset);
             int startOffset = context.offset();
 
             document.remove(startOffset, caretOffset - startOffset);
