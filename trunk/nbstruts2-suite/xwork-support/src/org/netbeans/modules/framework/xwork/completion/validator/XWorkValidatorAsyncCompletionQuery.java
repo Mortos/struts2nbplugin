@@ -16,7 +16,7 @@ public class XWorkValidatorAsyncCompletionQuery extends AsyncCompletionQuery {
     @Override
     protected void query(CompletionResultSet completionResultSet, Document document, int caretOffset) {
         try {
-            XWorkValidatorCompletionContext context = new XWorkValidatorCompletionContext(document, caretOffset);
+            XWorkValidatorValueCompletionContext context = new XWorkValidatorValueCompletionContext(document, caretOffset);
             XWorkValidatorCompletor completor = XWorkValidatorCompletorFactory.completor(context);
             completionResultSet.addAllItems(completor.items());
         } catch (BadLocationException ex) {

@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
-OpenIDE-Module: org.netbeans.modules.framework.xwork
+OpenIDE-Module: org.netbeans.modules.framework.xwork/0
+OpenIDE-Module-Implementation-Version: 1
 OpenIDE-Module-Layer: org/netbeans/modules/framework/xwork/layer.xml
 OpenIDE-Module-Localizing-Bundle: org/netbeans/modules/framework/xwork/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Specification-Version: 0.1
 

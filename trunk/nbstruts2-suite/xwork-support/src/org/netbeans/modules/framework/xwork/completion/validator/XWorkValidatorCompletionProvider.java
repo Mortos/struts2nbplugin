@@ -2,7 +2,6 @@ package org.netbeans.modules.framework.xwork.completion.validator;
 
 import javax.swing.text.JTextComponent;
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
-import org.netbeans.modules.framework.xwork.spi.XWorkValidatorCompletionProvider;
 import org.netbeans.spi.editor.completion.CompletionProvider;
 import org.netbeans.spi.editor.completion.CompletionTask;
 import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
@@ -13,12 +12,12 @@ import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
  * @author Aleh Maksimovich (aleh.maksimovich@gmail.com)
  */
 @MimeRegistration(mimeType = "text/x-xwork-validator+xml", service = CompletionProvider.class)
-public class XWorkValidatorCompletionProviderImpl implements XWorkValidatorCompletionProvider {
+public class XWorkValidatorCompletionProvider implements CompletionProvider {
 
     @Override
     public CompletionTask createTask(int queryType, JTextComponent textComponent) {
 
-        if (queryType == CompletionProvider.COMPLETION_QUERY_TYPE) {
+        if ((queryType & CompletionProvider.COMPLETION_QUERY_TYPE) != 0) {
             return new AsyncCompletionTask(new XWorkValidatorAsyncCompletionQuery(), textComponent);
         }
         return null;
