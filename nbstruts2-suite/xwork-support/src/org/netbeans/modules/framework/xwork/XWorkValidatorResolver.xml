@@ -25,4 +25,12 @@
             </xml-rule>
         </resolver>
     </file>
+    <file>
+        <ext name="xml"/>
+        <resolver mime="text/x-xwork-validator-config+xml">
+            <xml-rule>
+                <doctype public-id="-//OpenSymphony Group//XWork Validator Config 1.0//EN"/>
+            </xml-rule>
+        </resolver>
+    </file>
 </MIME-resolver>
