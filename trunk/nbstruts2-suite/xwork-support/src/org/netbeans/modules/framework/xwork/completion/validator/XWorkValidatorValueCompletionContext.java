@@ -6,6 +6,8 @@ import org.netbeans.api.lexer.Token;
 import org.netbeans.api.lexer.TokenHierarchy;
 import org.netbeans.api.lexer.TokenSequence;
 import org.netbeans.api.xml.lexer.XMLTokenId;
+import org.netbeans.modules.editor.NbEditorUtilities;
+import org.openide.filesystems.FileObject;
 
 /**
  *
@@ -13,6 +15,8 @@ import org.netbeans.api.xml.lexer.XMLTokenId;
  */
 public class XWorkValidatorValueCompletionContext {
 
+    private Document document;
+    private FileObject file;
     private boolean valid = false;
     private int offset;
     private int typedLength;
@@ -21,6 +25,9 @@ public class XWorkValidatorValueCompletionContext {
     private CharSequence tagName;
 
     public XWorkValidatorValueCompletionContext(Document document, int caretOffset) throws BadLocationException {
+
+        this.document = document;
+        file = NbEditorUtilities.getFileObject(document);
 
         final TokenHierarchy<Document> tokenHierarchy = TokenHierarchy.get(document);
         final TokenSequence<XMLTokenId> tokenSequence = tokenHierarchy.tokenSequence(XMLTokenId.language());
@@ -34,6 +41,14 @@ public class XWorkValidatorValueCompletionContext {
                 initTag(tokenSequence);
             }
         }
+    }
+
+    public Document document() {
+        return document;
+    }
+
+    public FileObject file() {
+        return file;
     }
 
     public boolean isValid() {

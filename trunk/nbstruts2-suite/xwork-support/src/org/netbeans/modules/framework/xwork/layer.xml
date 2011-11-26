@@ -4,7 +4,7 @@
     <folder name="Services">
         <folder name="MIMEResolver">
             <file name="XWorkValidatorResolver.xml" url="XWorkValidatorResolver.xml">
-                <attr name="displayName" bundlevalue="org.netbeans.modules.web.framework.xwork.Bundle#Services/MIMEResolver/XWorkValidatorResolver.xml"/>
+                <attr name="displayName" bundlevalue="org.netbeans.modules.framework.xwork.Bundle#Services/MIMEResolver/XWorkValidatorResolver.xml"/>
             </file>
         </folder>
     </folder>
@@ -13,7 +13,6 @@
             <folder name="x-xwork-validator+xml">
                 <folder name="CompletionProviders">
                     <file name="org-netbeans-modules-framework-xwork-completion-validator-XWorkValidatorCompletionProvider.instance"/>
-                    <file name="org-netbeans-modules-web-framework-xwork-completion-validator-XWorkValidatorCompletionProvider.instance"/>
                 </folder>
             </folder>
         </folder>

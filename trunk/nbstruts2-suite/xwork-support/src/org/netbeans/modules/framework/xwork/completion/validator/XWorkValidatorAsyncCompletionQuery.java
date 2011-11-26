@@ -2,7 +2,6 @@ package org.netbeans.modules.framework.xwork.completion.validator;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import org.netbeans.api.xml.lexer.XMLTokenId;
 import org.netbeans.spi.editor.completion.CompletionResultSet;
 import org.netbeans.spi.editor.completion.support.AsyncCompletionQuery;
 import org.openide.util.Exceptions;
