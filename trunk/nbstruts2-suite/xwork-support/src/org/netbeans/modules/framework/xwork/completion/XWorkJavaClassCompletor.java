@@ -39,8 +39,10 @@ import org.netbeans.api.java.source.ClassIndex;
 import org.netbeans.api.java.source.ClassIndex.SearchScope;
 import org.netbeans.api.java.source.ClasspathInfo;
 import org.netbeans.api.java.source.CompilationController;
+import org.netbeans.api.java.source.ElementHandle;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.Task;
+import org.netbeans.modules.framework.xwork.completion.configuration.XWorkConfigurationExpressJavaClassAttributeCompletionItem;
 import org.netbeans.modules.framework.xwork.completion.configuration.XWorkConfigurationJavaClassAttributeCompletionItem;
 import org.netbeans.modules.framework.xwork.completion.configuration.XWorkConfigurationJavaPackageAttributeCompletionItem;
 import org.netbeans.spi.editor.completion.CompletionItem;
@@ -95,15 +97,57 @@ class XWorkClassCompletionTask implements Task<CompilationController> {
     @Override
     public void run(CompilationController controller) throws Exception {
         controller.toPhase(JavaSource.Phase.ELEMENTS_RESOLVED);
+
+        packageCompletion(controller);
+
+        if ("".equals(packageName(typedText)) && !"".equals(classNamePrefix())) {
+            expressClassCompletion(controller);
+        } else {
+            packageClassCompletion(controller);
+        }
+    }
+
+    private String shortPackageName(String packageName) {
+        int lastSeparatorIndex = packageName.lastIndexOf(PACKAGE_NAME_SEPARATOR);
+        if (lastSeparatorIndex == -1) {
+            return packageName;
+        } else {
+            return packageName.substring(lastSeparatorIndex + 1);
+        }
+    }
+
+    private String packageName(String className) {
+        int lastSeparatorIndex = className.lastIndexOf(PACKAGE_NAME_SEPARATOR);
+        if (lastSeparatorIndex == -1) {
+            return "";
+        } else {
+            return className.substring(0, lastSeparatorIndex);
+        }
+    }
+
+    private String classNamePrefix() {
+        int lastSeparatorIndex = typedText.lastIndexOf(PACKAGE_NAME_SEPARATOR);
+        if (lastSeparatorIndex == -1) {
+            return typedText;
+        } else {
+            return typedText.substring(lastSeparatorIndex + 1);
+        }
+    }
+
+    private void packageCompletion(CompilationController controller) {
         ClassIndex classIndex = controller.getClasspathInfo().getClassIndex();
 
         Set<String> packageNames = classIndex.getPackageNames(typedText, true, scope);
         for (String packageName : packageNames) {
-            target.add(new XWorkConfigurationJavaPackageAttributeCompletionItem(packageName));
+            String shortPackageName = shortPackageName(packageName);
+            target.add(new XWorkConfigurationJavaPackageAttributeCompletionItem(shortPackageName, packageName));
         }
+    }
 
+    private void packageClassCompletion(CompilationController controller) {
         String currentPackageName = packageName(typedText);
-        String currentClassPrefix = classNamePrefix(typedText);
+        String currentClassPrefix = classNamePrefix();
+
         PackageElement currentPackage = controller.getElements().getPackageElement(currentPackageName);
         if (currentPackage != null) {
             List<TypeElement> classes = new ClassElementScanner().scan(currentPackage);
@@ -111,7 +155,9 @@ class XWorkClassCompletionTask implements Task<CompilationController> {
                 try {
                     CharSequence nameStart = typeElement.getSimpleName().subSequence(0, currentClassPrefix.length());
                     if (nameStart.toString().equalsIgnoreCase(currentClassPrefix)) {
-                        target.add(new XWorkConfigurationJavaClassAttributeCompletionItem(typeElement.getQualifiedName().toString()));
+                        String qualifiedClassName = typeElement.getQualifiedName().toString();
+                        String shortClassName = typeElement.getSimpleName().toString();
+                        target.add(new XWorkConfigurationJavaClassAttributeCompletionItem(shortClassName, qualifiedClassName));
                     }
                 } catch (IndexOutOfBoundsException ex) {
                 }
@@ -119,22 +165,26 @@ class XWorkClassCompletionTask implements Task<CompilationController> {
         }
     }
 
-    private String packageName(String typedText) {
-        int lastSeparatorIndex = typedText.lastIndexOf(PACKAGE_NAME_SEPARATOR);
-        if (lastSeparatorIndex == -1) {
-            return "";
-        } else {
-            return typedText.substring(0, lastSeparatorIndex);
+    private void expressClassCompletion(CompilationController controller) {
+        String currentClassPrefix = classNamePrefix();
+        ClassIndex classIndex = controller.getClasspathInfo().getClassIndex();
+
+        Set<ElementHandle<TypeElement>> declaredClasses = classIndex.getDeclaredTypes(currentClassPrefix, ClassIndex.NameKind.CASE_INSENSITIVE_PREFIX, scope);
+        for (ElementHandle<TypeElement> elementHandle : declaredClasses) {
+            TypeElement typeElement = elementHandle.resolve(controller);
+            if (ElementKind.CLASS.equals(elementHandle.getKind())
+                    && isAccessibleClass(typeElement)) {
+                String qualifiedClassName = typeElement.getQualifiedName().toString();
+                String shortClassName = typeElement.getSimpleName().toString();
+                String packageName = packageName(qualifiedClassName);
+                target.add(new XWorkConfigurationExpressJavaClassAttributeCompletionItem(shortClassName, packageName, qualifiedClassName));
+            }
         }
     }
 
-    private String classNamePrefix(String typedText) {
-        int lastSeparatorIndex = typedText.lastIndexOf(PACKAGE_NAME_SEPARATOR);
-        if (lastSeparatorIndex == -1) {
-            return typedText;
-        } else {
-            return typedText.substring(lastSeparatorIndex + 1);
-        }
+    private boolean isAccessibleClass(TypeElement te) {
+        NestingKind nestingKind = te.getNestingKind();
+        return (nestingKind == NestingKind.TOP_LEVEL) || (nestingKind == NestingKind.MEMBER && te.getModifiers().contains(Modifier.STATIC));
     }
 }
 
@@ -146,7 +196,8 @@ class ClassElementScanner extends ElementScanner6<List<TypeElement>, Void> {
 
     @Override
     public List<TypeElement> visitType(TypeElement typeElement, Void arg) {
-        if (typeElement.getKind() == ElementKind.CLASS && isAccessibleClass(typeElement)) {
+        if (ElementKind.CLASS.equals(typeElement.getKind())
+                && isAccessibleClass(typeElement)) {
             DEFAULT_VALUE.add(typeElement);
         }
         return super.visitType(typeElement, arg);

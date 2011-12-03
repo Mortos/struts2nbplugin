@@ -41,14 +41,54 @@ import org.openide.util.Exceptions;
  */
 public class XWorkCompletionItem implements CompletionItem {
 
-    private String text;
+    private String caption;
+    private String completion;
     private ImageIcon imageIcon;
     private XWorkTextColors colors;
 
     public XWorkCompletionItem(String text, ImageIcon imageIcon, XWorkTextColors colors) {
-        this.text = text;
+        this.caption = this.completion = text;
         this.imageIcon = imageIcon;
         this.colors = colors;
+    }
+
+    public XWorkCompletionItem(String caption, String completion, ImageIcon imageIcon, XWorkTextColors colors) {
+        this.caption = caption;
+        this.completion = completion;
+        this.imageIcon = imageIcon;
+        this.colors = colors;
+    }
+
+    protected String getCaption() {
+        return caption;
+    }
+
+    protected void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    protected XWorkTextColors getColors() {
+        return colors;
+    }
+
+    protected void setColors(XWorkTextColors colors) {
+        this.colors = colors;
+    }
+
+    protected String getCompletion() {
+        return completion;
+    }
+
+    protected void setCompletion(String completion) {
+        this.completion = completion;
+    }
+
+    protected ImageIcon getImageIcon() {
+        return imageIcon;
+    }
+
+    protected void setImageIcon(ImageIcon imageIcon) {
+        this.imageIcon = imageIcon;
     }
 
     @Override
@@ -61,7 +101,7 @@ public class XWorkCompletionItem implements CompletionItem {
             int startOffset = context.offset();
 
             document.remove(startOffset, caretOffset - startOffset);
-            document.insertString(startOffset, text, null);
+            document.insertString(startOffset, completion, null);
         } catch (BadLocationException ex) {
             Exceptions.printStackTrace(ex);
         } finally {
@@ -75,14 +115,14 @@ public class XWorkCompletionItem implements CompletionItem {
 
     @Override
     public int getPreferredWidth(Graphics graphics, Font font) {
-        return CompletionUtilities.getPreferredWidth(text, null, graphics, font);
+        return CompletionUtilities.getPreferredWidth(caption, null, graphics, font);
     }
 
     @Override
     public void render(Graphics graphics,
             Font defaultFont, Color defaultColor, Color backgroundColor,
             int width, int height, boolean selected) {
-        CompletionUtilities.renderHtml(imageIcon, text, null,
+        CompletionUtilities.renderHtml(imageIcon, caption, null,
                 graphics, defaultFont, colors.foreColor(defaultColor, selected),
                 width, height, selected);
     }
@@ -109,7 +149,7 @@ public class XWorkCompletionItem implements CompletionItem {
 
     @Override
     public CharSequence getSortText() {
-        return text;
+        return caption;
     }
 
     @Override
@@ -126,7 +166,7 @@ public class XWorkCompletionItem implements CompletionItem {
             return false;
         }
         final XWorkCompletionItem other = (XWorkCompletionItem) obj;
-        if ((this.text == null) ? (other.text != null) : !this.text.equals(other.text)) {
+        if ((this.completion == null) ? (other.completion != null) : !this.completion.equals(other.completion)) {
             return false;
         }
         return true;
@@ -135,7 +175,7 @@ public class XWorkCompletionItem implements CompletionItem {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 71 * hash + (this.text != null ? this.text.hashCode() : 0);
+        hash = 71 * hash + (this.completion != null ? this.completion.hashCode() : 0);
         return hash;
     }
 }

@@ -29,8 +29,8 @@ import org.netbeans.modules.framework.xwork.completion.resource.XWorkTextColors;
  */
 public enum XWorkConfigurationCompletionItemColors implements XWorkTextColors {
 
-    CLASS_COLORS(Color.BLUE, null, null, null),
-    PACKAGE_COLORS(Color.BLUE, null, null, null);
+    CLASS_COLORS(Color.decode("#560000"), null, null, null),
+    PACKAGE_COLORS(Color.decode("#005600"), null, null, null);
     private Color foreColor;
     private Color backColor;
     private Color selectedForeColor;
