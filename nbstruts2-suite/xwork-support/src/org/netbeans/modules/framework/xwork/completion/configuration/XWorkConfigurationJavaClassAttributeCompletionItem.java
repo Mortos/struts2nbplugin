@@ -30,8 +30,8 @@ import org.netbeans.modules.framework.xwork.completion.configuration.resource.XW
  */
 public class XWorkConfigurationJavaClassAttributeCompletionItem extends XWorkCompletionItem {
 
-    public XWorkConfigurationJavaClassAttributeCompletionItem(String text) {
-        super(text,
+    public XWorkConfigurationJavaClassAttributeCompletionItem(String caption, String completion) {
+        super(caption, completion,
                 XWorkConfigurationCompletionItemIcon.CLASS_ICON.getImageIcon(),
                 XWorkConfigurationCompletionItemColors.CLASS_COLORS);
     }

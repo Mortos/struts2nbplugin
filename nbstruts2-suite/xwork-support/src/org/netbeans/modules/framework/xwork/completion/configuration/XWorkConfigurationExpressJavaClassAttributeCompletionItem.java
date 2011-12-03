@@ -20,19 +20,17 @@
  */
 package org.netbeans.modules.framework.xwork.completion.configuration;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionItem;
-import org.netbeans.modules.framework.xwork.completion.configuration.resource.XWorkConfigurationCompletionItemColors;
-import org.netbeans.modules.framework.xwork.completion.configuration.resource.XWorkConfigurationCompletionItemIcon;
-
 /**
  *
  * @author Aleh
  */
-public class XWorkConfigurationJavaPackageAttributeCompletionItem extends XWorkCompletionItem {
+public class XWorkConfigurationExpressJavaClassAttributeCompletionItem extends XWorkConfigurationJavaClassAttributeCompletionItem {
 
-    public XWorkConfigurationJavaPackageAttributeCompletionItem(String caption, String completion) {
-        super(caption, completion,
-                XWorkConfigurationCompletionItemIcon.PACKAGE_ICON.getImageIcon(),
-                XWorkConfigurationCompletionItemColors.PACKAGE_COLORS);
+    private static final String EXPRESS_CLASS_NAME_FORMAT = "%1$s1 (%2$s)";
+
+    public XWorkConfigurationExpressJavaClassAttributeCompletionItem(String caption, String packageName, String completion) {
+        super(null, completion);
+        String displayName = String.format(EXPRESS_CLASS_NAME_FORMAT, caption, packageName);
+        setCaption(displayName);
     }
 }
