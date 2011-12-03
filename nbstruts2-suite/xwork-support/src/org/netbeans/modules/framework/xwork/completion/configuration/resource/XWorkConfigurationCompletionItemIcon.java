@@ -18,32 +18,42 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.completion.validator;
+package org.netbeans.modules.framework.xwork.completion.configuration.resource;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import org.netbeans.spi.editor.completion.CompletionResultSet;
-import org.netbeans.spi.editor.completion.support.AsyncCompletionQuery;
+import java.awt.Image;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author Aleh
  */
-public class XWorkValidatorAsyncCompletionQuery extends AsyncCompletionQuery {
+public enum XWorkConfigurationCompletionItemIcon {
 
-    @Override
-    protected void query(CompletionResultSet completionResultSet, Document document, int caretOffset) {
+    CLASS_ICON("class.png"),
+    PACKAGE_ICON("package.gif");
+    private static final String ICONS_PACKAGE = "org/netbeans/modules/framework/xwork/completion/configuration/resource";
+    private ImageIcon icon;
+
+    private XWorkConfigurationCompletionItemIcon(String iconName) {
         try {
-            XWorkCompletionContext context = new XWorkCompletionContext(document, caretOffset);
-            XWorkCompletor completor = XWorkValidatorCompletorFactory.completor(context);
-            completionResultSet.addAllItems(completor.items());
-        } catch (BadLocationException ex) {
+            String resourcePath = String.format("%s/%s", ICONS_PACKAGE, iconName);
+            InputStream imageStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
+            Image image = ImageIO.read(imageStream);
+            icon = new ImageIcon(image);
+        } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
-        } finally {
-            completionResultSet.finish();
+            icon = null;
+        } catch (IllegalArgumentException ex) {
+            Exceptions.printStackTrace(ex);
+            icon = null;
         }
+    }
+
+    public ImageIcon getImageIcon() {
+        return icon;
     }
 }

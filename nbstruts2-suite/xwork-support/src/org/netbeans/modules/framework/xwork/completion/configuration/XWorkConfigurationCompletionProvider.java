@@ -18,7 +18,7 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.completion.validator;
+package org.netbeans.modules.framework.xwork.completion.configuration;
 
 import javax.swing.text.JTextComponent;
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
@@ -31,14 +31,14 @@ import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
  *
  * @author Aleh Maksimovich (aleh.maksimovich@gmail.com)
  */
-@MimeRegistration(mimeType = "text/x-xwork-validator+xml", service = CompletionProvider.class)
-public class XWorkValidatorCompletionProvider implements CompletionProvider {
+@MimeRegistration(mimeType = "text/x-xwork-validator-config+xml", service = CompletionProvider.class)
+public class XWorkConfigurationCompletionProvider implements CompletionProvider {
 
     @Override
     public CompletionTask createTask(int queryType, JTextComponent textComponent) {
 
         if ((queryType & CompletionProvider.COMPLETION_QUERY_TYPE) != 0) {
-            return new AsyncCompletionTask(new XWorkValidatorAsyncCompletionQuery(), textComponent);
+            return new AsyncCompletionTask(new XWorkConfigurationAsyncCompletionQuery(), textComponent);
         }
         return null;
 

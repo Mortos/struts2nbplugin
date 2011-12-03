@@ -1,4 +1,24 @@
-package org.netbeans.modules.framework.xwork.completion.validator;
+/*
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the License). You may not use this file except in
+ * compliance with the License.
+ *
+ * You can obtain a copy of the License at http://www.netbeans.org/cddl.html
+ * or http://www.netbeans.org/cddl.txt.
+ *
+ * When distributing Covered Code, include this CDDL Header Notice in each file
+ * and include the License file at http://www.netbeans.org/cddl.txt.
+ * If applicable, add the following below the CDDL Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ *
+ * The Original Software is NetBeans. The Initial Developer of the Original
+ * Software is 
+ * Aleh Maksimovich <aleh.maksimovich@gmail.com>, 
+ *                  <aleh.maksimovich@hiqo-solutions.com>.
+ * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
+ */
+package org.netbeans.modules.framework.xwork.completion;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -13,7 +33,7 @@ import org.openide.filesystems.FileObject;
  *
  * @author Aleh Maksimovich
  */
-public class XWorkValidatorValueCompletionContext {
+public class XWorkCompletionContext {
 
     private Document document;
     private FileObject file;
@@ -24,7 +44,7 @@ public class XWorkValidatorValueCompletionContext {
     private CharSequence attributeName;
     private CharSequence tagName;
 
-    public XWorkValidatorValueCompletionContext(Document document, int caretOffset) throws BadLocationException {
+    public XWorkCompletionContext(Document document, int caretOffset) throws BadLocationException {
 
         this.document = document;
         file = NbEditorUtilities.getFileObject(document);
@@ -73,6 +93,12 @@ public class XWorkValidatorValueCompletionContext {
 
     public CharSequence tagName() {
         return tagName;
+    }
+
+    public boolean atAttribute(String attribute, String tag) {
+        return isValid()
+                && attribute.equals(attributeName())
+                && tag.equals(tagName());
     }
 
     private boolean hasTokenId(final Token<XMLTokenId> token, final XMLTokenId id) {
