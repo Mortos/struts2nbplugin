@@ -18,21 +18,29 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.completion.validator;
+package org.netbeans.modules.framework.xwork.completion;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionItem;
-import org.netbeans.modules.framework.xwork.completion.validator.resource.XWorkValidatorCompletionItemColors;
-import org.netbeans.modules.framework.xwork.completion.validator.resource.XWorkValidatorCompletionItemIcon;
+import java.util.Collection;
+import java.util.Collections;
+import org.netbeans.spi.editor.completion.CompletionItem;
 
 /**
  *
  * @author Aleh
  */
-public class XWorkValidatorAttributeCompletionItem extends XWorkCompletionItem {
+public final class XWorkEmptyCompletor implements XWorkCompletor {
 
-    public XWorkValidatorAttributeCompletionItem(String text) {
-        super(text,
-                XWorkValidatorCompletionItemIcon.VALUE_ICON.getImageIcon(),
-                XWorkValidatorCompletionItemColors.VALUE_COLORS);
+    private static final XWorkCompletor INSTANCE = new XWorkEmptyCompletor();
+
+    private XWorkEmptyCompletor() {
+    }
+
+    @Override
+    public Collection<? extends CompletionItem> items() {
+        return Collections.<CompletionItem>emptyList();
+    }
+
+    public static XWorkCompletor instance() {
+        return INSTANCE;
     }
 }

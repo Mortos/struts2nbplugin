@@ -18,28 +18,43 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.completion.validator;
+package org.netbeans.modules.framework.xwork.completion;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
-import org.netbeans.modules.framework.xwork.completion.XWorkEmptyCompletor;
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
  * @author Aleh
  */
-public class XWorkValidatorCompletorFactory {
+public enum XWorkDocuments {
 
-    private static final String VALIDATOR_TAG = "validator";
-    private static final String FIELD_VALIDATOR_TAG = "field-validator";
-    private static final String TYPE_ATTRIBITE = "type";
+    CONFIGURATION("text/x-xwork-validator-config+xml") {
 
-    public static XWorkCompletor completor(XWorkCompletionContext context) {
-        if (context.atAttribute(TYPE_ATTRIBITE, VALIDATOR_TAG)
-                || context.atAttribute(TYPE_ATTRIBITE, FIELD_VALIDATOR_TAG)) {
-            return new XWorkValidatorTypeAttributeValueCompletor(context);
+        {
+            docTypes.add("-//OpenSymphony Group//XWork Validator Config 1.0//EN");
         }
+    },
+    VALIDATION("text/x-xwork-validator+xml") {
 
-        return XWorkEmptyCompletor.instance();
+        {
+            docTypes.add("-//OpenSymphony Group//XWork Validator 1.0//EN");
+            docTypes.add("-//OpenSymphony Group//XWork Validator 1.0.2//EN");
+            docTypes.add("-//OpenSymphony Group//XWork Validator 1.0.3//EN");
+        }
+    };
+    private String mimeType;
+    protected List<String> docTypes = new LinkedList<String>();
+
+    private XWorkDocuments(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public boolean isMimeType(String testMimeType) {
+        return mimeType.equals(testMimeType);
+    }
+
+    public boolean isDocType(String testDocType) {
+        return docTypes.contains(testDocType);
     }
 }

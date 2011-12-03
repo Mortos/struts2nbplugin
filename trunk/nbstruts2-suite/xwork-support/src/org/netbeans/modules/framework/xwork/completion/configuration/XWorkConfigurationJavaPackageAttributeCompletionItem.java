@@ -18,21 +18,21 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.completion.validator;
+package org.netbeans.modules.framework.xwork.completion.configuration;
 
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletionItem;
-import org.netbeans.modules.framework.xwork.completion.validator.resource.XWorkValidatorCompletionItemColors;
-import org.netbeans.modules.framework.xwork.completion.validator.resource.XWorkValidatorCompletionItemIcon;
+import org.netbeans.modules.framework.xwork.completion.configuration.resource.XWorkConfigurationCompletionItemColors;
+import org.netbeans.modules.framework.xwork.completion.configuration.resource.XWorkConfigurationCompletionItemIcon;
 
 /**
  *
  * @author Aleh
  */
-public class XWorkValidatorAttributeCompletionItem extends XWorkCompletionItem {
+public class XWorkConfigurationJavaPackageAttributeCompletionItem extends XWorkCompletionItem {
 
-    public XWorkValidatorAttributeCompletionItem(String text) {
+    public XWorkConfigurationJavaPackageAttributeCompletionItem(String text) {
         super(text,
-                XWorkValidatorCompletionItemIcon.VALUE_ICON.getImageIcon(),
-                XWorkValidatorCompletionItemColors.VALUE_COLORS);
+                XWorkConfigurationCompletionItemIcon.PACKAGE_ICON.getImageIcon(),
+                XWorkConfigurationCompletionItemColors.PACKAGE_COLORS);
     }
 }
