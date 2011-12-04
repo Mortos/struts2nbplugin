@@ -45,14 +45,17 @@ public class XWorkCompletionItem implements CompletionItem {
     private String completion;
     private ImageIcon imageIcon;
     private XWorkTextColors colors;
+    private XWorkCompletionContext context;
 
-    public XWorkCompletionItem(String text, ImageIcon imageIcon, XWorkTextColors colors) {
+    public XWorkCompletionItem(XWorkCompletionContext context, String text, ImageIcon imageIcon, XWorkTextColors colors) {
+        this.context = context;
         this.caption = this.completion = text;
         this.imageIcon = imageIcon;
         this.colors = colors;
     }
 
-    public XWorkCompletionItem(String caption, String completion, ImageIcon imageIcon, XWorkTextColors colors) {
+    public XWorkCompletionItem(XWorkCompletionContext context, String caption, String completion, ImageIcon imageIcon, XWorkTextColors colors) {
+        this.context = context;
         this.caption = caption;
         this.completion = completion;
         this.imageIcon = imageIcon;
@@ -97,7 +100,6 @@ public class XWorkCompletionItem implements CompletionItem {
             Document document = textComponent.getDocument();
             int caretOffset = textComponent.getCaretPosition();
 
-            XWorkCompletionContext context = new XWorkCompletionContext(document, caretOffset);
             int startOffset = context.offset();
 
             document.remove(startOffset, caretOffset - startOffset);

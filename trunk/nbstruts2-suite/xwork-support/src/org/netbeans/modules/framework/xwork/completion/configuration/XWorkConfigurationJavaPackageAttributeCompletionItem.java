@@ -20,6 +20,7 @@
  */
 package org.netbeans.modules.framework.xwork.completion.configuration;
 
+import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletionItem;
 import org.netbeans.modules.framework.xwork.completion.configuration.resource.XWorkConfigurationCompletionItemColors;
 import org.netbeans.modules.framework.xwork.completion.configuration.resource.XWorkConfigurationCompletionItemIcon;
@@ -30,8 +31,8 @@ import org.netbeans.modules.framework.xwork.completion.configuration.resource.XW
  */
 public class XWorkConfigurationJavaPackageAttributeCompletionItem extends XWorkCompletionItem {
 
-    public XWorkConfigurationJavaPackageAttributeCompletionItem(String caption, String completion) {
-        super(caption, completion,
+    public XWorkConfigurationJavaPackageAttributeCompletionItem(XWorkCompletionContext context, String caption, String completion) {
+        super(context, caption, completion,
                 XWorkConfigurationCompletionItemIcon.PACKAGE_ICON.getImageIcon(),
                 XWorkConfigurationCompletionItemColors.PACKAGE_COLORS);
     }

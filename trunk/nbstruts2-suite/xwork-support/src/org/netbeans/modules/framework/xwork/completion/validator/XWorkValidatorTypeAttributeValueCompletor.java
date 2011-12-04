@@ -20,7 +20,6 @@
  */
 package org.netbeans.modules.framework.xwork.completion.validator;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
 import org.netbeans.modules.framework.xwork.completion.XWorkDocuments;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletionItem;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
@@ -30,6 +29,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.WeakHashMap;
 import org.netbeans.api.java.classpath.ClassPath;
+import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
 import org.openide.filesystems.FileObject;
 
 /**
@@ -41,10 +41,12 @@ public class XWorkValidatorTypeAttributeValueCompletor implements XWorkCompletor
     private static final String DEFAULT_XWORK_VALIDATORS_CONFIGURATION = "com/opensymphony/xwork2/validator/validators/default.xml";
     private static final String CUSTOM_XWORK_VALIDATORS_CONFIGURATION = "validators.xml";
     private static final WeakHashMap<FileObject, XWorkValidatorConfigurationScaner> scaners = new WeakHashMap<FileObject, XWorkValidatorConfigurationScaner>();
+    private XWorkCompletionContext context;
     private Set<String> choises = new HashSet<String>();
     private String typedText;
 
     public XWorkValidatorTypeAttributeValueCompletor(XWorkCompletionContext context) {
+        this.context = context;
         typedText = context.typedText().toString();
 
         ClassPath compileClassPath = ClassPath.getClassPath(context.file(), ClassPath.COMPILE);
@@ -61,7 +63,7 @@ public class XWorkValidatorTypeAttributeValueCompletor implements XWorkCompletor
         Collection<XWorkCompletionItem> result = new LinkedList<XWorkCompletionItem>();
         for (String choise : choises) {
             if (choise.startsWith(typedText)) {
-                result.add(new XWorkValidatorAttributeCompletionItem(choise));
+                result.add(new XWorkValidatorAttributeCompletionItem(context, choise));
             }
         }
         return result;

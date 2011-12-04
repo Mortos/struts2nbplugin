@@ -34,7 +34,7 @@ import org.openide.util.Exceptions;
 public enum XWorkConfigurationCompletionItemIcon {
 
     CLASS_ICON("class.png"),
-    PACKAGE_ICON("package.gif");
+    PACKAGE_ICON("package.png");
     private static final String ICONS_PACKAGE = "org/netbeans/modules/framework/xwork/completion/configuration/resource";
     private ImageIcon icon;
 

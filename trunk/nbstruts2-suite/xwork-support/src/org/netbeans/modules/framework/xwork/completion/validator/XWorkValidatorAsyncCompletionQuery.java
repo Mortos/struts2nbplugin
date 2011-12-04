@@ -20,7 +20,7 @@
  */
 package org.netbeans.modules.framework.xwork.completion.validator;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -37,7 +37,7 @@ public class XWorkValidatorAsyncCompletionQuery extends AsyncCompletionQuery {
     @Override
     protected void query(CompletionResultSet completionResultSet, Document document, int caretOffset) {
         try {
-            XWorkCompletionContext context = new XWorkCompletionContext(document, caretOffset);
+            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext(document, caretOffset);
             XWorkCompletor completor = XWorkValidatorCompletorFactory.completor(context);
             completionResultSet.addAllItems(completor.items());
         } catch (BadLocationException ex) {

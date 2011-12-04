@@ -41,7 +41,6 @@ public class XWorkConfigurationCompletionProvider implements CompletionProvider 
             return new AsyncCompletionTask(new XWorkConfigurationAsyncCompletionQuery(), textComponent);
         }
         return null;
-
     }
 
     @Override

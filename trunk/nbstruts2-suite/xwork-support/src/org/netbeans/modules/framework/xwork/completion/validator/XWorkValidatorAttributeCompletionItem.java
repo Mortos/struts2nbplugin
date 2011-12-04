@@ -20,6 +20,7 @@
  */
 package org.netbeans.modules.framework.xwork.completion.validator;
 
+import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletionItem;
 import org.netbeans.modules.framework.xwork.completion.validator.resource.XWorkValidatorCompletionItemColors;
 import org.netbeans.modules.framework.xwork.completion.validator.resource.XWorkValidatorCompletionItemIcon;
@@ -30,8 +31,8 @@ import org.netbeans.modules.framework.xwork.completion.validator.resource.XWorkV
  */
 public class XWorkValidatorAttributeCompletionItem extends XWorkCompletionItem {
 
-    public XWorkValidatorAttributeCompletionItem(String text) {
-        super(text,
+    public XWorkValidatorAttributeCompletionItem(XWorkCompletionContext context, String text) {
+        super(context, text,
                 XWorkValidatorCompletionItemIcon.VALUE_ICON.getImageIcon(),
                 XWorkValidatorCompletionItemColors.VALUE_COLORS);
     }

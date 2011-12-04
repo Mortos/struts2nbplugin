@@ -24,7 +24,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
 import org.netbeans.lib.editor.hyperlink.spi.HyperlinkProvider;
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
 import org.openide.util.Exceptions;
 
 /**
@@ -37,7 +37,7 @@ public class XWorkConfigurationHyperlinkProvider implements HyperlinkProvider {
     @Override
     public boolean isHyperlinkPoint(Document document, int caretOffset) {
         try {
-            XWorkCompletionContext context = new XWorkCompletionContext(document, caretOffset);
+            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext(document, caretOffset);
             return XWorkConfigurationHyperlinkActionFactory.isRegisteredHyperlinkPoint(context);
         } catch (BadLocationException ex) {
             Exceptions.printStackTrace(ex);
@@ -48,7 +48,7 @@ public class XWorkConfigurationHyperlinkProvider implements HyperlinkProvider {
     @Override
     public int[] getHyperlinkSpan(Document document, int caretOffset) {
         try {
-            XWorkCompletionContext context = new XWorkCompletionContext(document, caretOffset);
+            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext(document, caretOffset);
             return new int[]{context.offset(), context.endOffset()};
         } catch (BadLocationException ex) {
             Exceptions.printStackTrace(ex);
@@ -59,7 +59,7 @@ public class XWorkConfigurationHyperlinkProvider implements HyperlinkProvider {
     @Override
     public void performClickAction(Document document, int caretOffset) {
         try {
-            XWorkCompletionContext context = new XWorkCompletionContext(document, caretOffset);
+            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext(document, caretOffset);
             XWorkConfigurationHyperlinkActionFactory.hyperlinkAction(context);
         } catch (BadLocationException ex) {
             Exceptions.printStackTrace(ex);

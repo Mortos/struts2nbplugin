@@ -18,26 +18,33 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.completion.configuration;
+package org.netbeans.modules.framework.xwork.completion.annotation;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
-import org.netbeans.modules.framework.xwork.completion.XWorkEmptyCompletor;
+import javax.swing.text.JTextComponent;
+import org.netbeans.api.editor.mimelookup.MimeRegistration;
+import org.netbeans.spi.editor.completion.CompletionProvider;
+import org.netbeans.spi.editor.completion.CompletionTask;
+import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
 
 /**
  *
  * @author Aleh
  */
-public class XWorkConfigurationCompletorFactory {
+@MimeRegistration(mimeType = "text/x-java", service = CompletionProvider.class)
+public class XWorkJavaCodeCompletionProvider implements CompletionProvider {
 
-    private static final String VALIDATOR_TAG = "validator";
-    private static final String CLASS_ATTRIBITE = "class";
+    @Override
+    public CompletionTask createTask(int queryType, JTextComponent textComponent) {
 
-    public static XWorkCompletor completor(XWorkXMLCompletionContext context) {
-        if (context.atAttribute(CLASS_ATTRIBITE, VALIDATOR_TAG)) {
-            return new XWorkConfigurationClassAttributeCompletor(context);
+        if ((queryType & CompletionProvider.COMPLETION_QUERY_TYPE) != 0) {
+            return new AsyncCompletionTask(new XWorkJavaCodeCompletionQuery(), textComponent);
         }
+        return null;
+    }
 
-        return XWorkEmptyCompletor.instance();
+    @Override
+    public int getAutoQueryTypes(JTextComponent textComponent, String typedText) {
+        // TODO: at the moment automatic completion is disabled.
+        return 0;
     }
 }
