@@ -23,7 +23,7 @@ package org.netbeans.modules.framework.xwork.completion.configuration;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
 import org.netbeans.spi.editor.completion.CompletionResultSet;
 import org.netbeans.spi.editor.completion.support.AsyncCompletionQuery;
 import org.openide.util.Exceptions;
@@ -37,7 +37,7 @@ public class XWorkConfigurationAsyncCompletionQuery extends AsyncCompletionQuery
     @Override
     protected void query(CompletionResultSet completionResultSet, Document document, int caretOffset) {
         try {
-            XWorkCompletionContext context = new XWorkCompletionContext(document, caretOffset);
+            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext(document, caretOffset);
             XWorkCompletor completor = XWorkConfigurationCompletorFactory.completor(context);
             completionResultSet.addAllItems(completor.items());
         } catch (BadLocationException ex) {

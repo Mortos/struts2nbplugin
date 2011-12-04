@@ -55,9 +55,11 @@ import org.openide.filesystems.FileObject;
 public class XWorkJavaClassCompletor implements XWorkCompletor {
 
     private static final Set<SearchScope> SCOPE_ALL = EnumSet.allOf(SearchScope.class);
+    private XWorkCompletionContext context;
     private Set<CompletionItem> choises = new HashSet<CompletionItem>();
 
-    public XWorkJavaClassCompletor(XWorkCompletionContext context) {
+    public XWorkJavaClassCompletor(XWorkXMLCompletionContext context) {
+        this.context = context;
         ClassPath sourceClassPath = ClassPath.getClassPath(context.file(), ClassPath.SOURCE);
         FileObject[] sourceRoots = sourceClassPath.getRoots();
         ArrayList<JavaSource> javaSourceList = new ArrayList<JavaSource>(sourceRoots.length);
@@ -69,7 +71,7 @@ public class XWorkJavaClassCompletor implements XWorkCompletor {
         String typedText = context.typedText().toString();
         for (JavaSource javaSource : javaSourceList) {
             try {
-                javaSource.runUserActionTask(new XWorkClassCompletionTask(typedText, SCOPE_ALL, choises), true);
+                javaSource.runUserActionTask(new XWorkClassCompletionTask(context, typedText, SCOPE_ALL, choises), true);
             } catch (IOException ex) {
             }
         }
@@ -84,11 +86,13 @@ public class XWorkJavaClassCompletor implements XWorkCompletor {
 class XWorkClassCompletionTask implements Task<CompilationController> {
 
     private static final String PACKAGE_NAME_SEPARATOR = ".";
+    private XWorkCompletionContext context;
     private String typedText;
     private Set<SearchScope> scope;
     private Set<CompletionItem> target;
 
-    public XWorkClassCompletionTask(String typedText, Set<SearchScope> scope, Set<CompletionItem> target) {
+    public XWorkClassCompletionTask(XWorkCompletionContext context, String typedText, Set<SearchScope> scope, Set<CompletionItem> target) {
+        this.context = context;
         this.typedText = typedText;
         this.scope = scope;
         this.target = target;
@@ -140,7 +144,7 @@ class XWorkClassCompletionTask implements Task<CompilationController> {
         Set<String> packageNames = classIndex.getPackageNames(typedText, true, scope);
         for (String packageName : packageNames) {
             String shortPackageName = shortPackageName(packageName);
-            target.add(new XWorkConfigurationJavaPackageAttributeCompletionItem(shortPackageName, packageName));
+            target.add(new XWorkConfigurationJavaPackageAttributeCompletionItem(context, shortPackageName, packageName));
         }
     }
 
@@ -157,7 +161,7 @@ class XWorkClassCompletionTask implements Task<CompilationController> {
                     if (nameStart.toString().equalsIgnoreCase(currentClassPrefix)) {
                         String qualifiedClassName = typeElement.getQualifiedName().toString();
                         String shortClassName = typeElement.getSimpleName().toString();
-                        target.add(new XWorkConfigurationJavaClassAttributeCompletionItem(shortClassName, qualifiedClassName));
+                        target.add(new XWorkConfigurationJavaClassAttributeCompletionItem(context, shortClassName, qualifiedClassName));
                     }
                 } catch (IndexOutOfBoundsException ex) {
                 }
@@ -177,7 +181,7 @@ class XWorkClassCompletionTask implements Task<CompilationController> {
                 String qualifiedClassName = typeElement.getQualifiedName().toString();
                 String shortClassName = typeElement.getSimpleName().toString();
                 String packageName = packageName(qualifiedClassName);
-                target.add(new XWorkConfigurationExpressJavaClassAttributeCompletionItem(shortClassName, packageName, qualifiedClassName));
+                target.add(new XWorkConfigurationExpressJavaClassAttributeCompletionItem(context, shortClassName, packageName, qualifiedClassName));
             }
         }
     }

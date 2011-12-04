@@ -20,6 +20,8 @@
  */
 package org.netbeans.modules.framework.xwork.completion.configuration;
 
+import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
+
 /**
  *
  * @author Aleh
@@ -28,8 +30,8 @@ public class XWorkConfigurationExpressJavaClassAttributeCompletionItem extends X
 
     private static final String EXPRESS_CLASS_NAME_FORMAT = "%1$s1 (%2$s)";
 
-    public XWorkConfigurationExpressJavaClassAttributeCompletionItem(String caption, String packageName, String completion) {
-        super(null, completion);
+    public XWorkConfigurationExpressJavaClassAttributeCompletionItem(XWorkCompletionContext context, String caption, String packageName, String completion) {
+        super(context, null, completion);
         String displayName = String.format(EXPRESS_CLASS_NAME_FORMAT, caption, packageName);
         setCaption(displayName);
     }
