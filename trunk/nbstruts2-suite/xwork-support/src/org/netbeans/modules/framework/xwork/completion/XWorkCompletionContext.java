@@ -39,6 +39,8 @@ public class XWorkCompletionContext {
     private FileObject file;
     private boolean valid = false;
     private int offset;
+    private int endOffset;
+    private CharSequence text;
     private int typedLength;
     private CharSequence typedText;
     private CharSequence attributeName;
@@ -79,6 +81,14 @@ public class XWorkCompletionContext {
         return offset;
     }
 
+    public int endOffset() {
+        return endOffset;
+    }
+
+    public CharSequence text() {
+        return text;
+    }
+
     public int typedLength() {
         return typedLength;
     }
@@ -113,11 +123,18 @@ public class XWorkCompletionContext {
         return 0;
     }
 
+    private int internalPostfix(final Token<XMLTokenId> token) {
+        if (hasTokenId(token, XMLTokenId.VALUE) && token.text().toString().endsWith("\"")) {
+            return 1;
+        }
+        return 0;
+    }
+
     private CharSequence tokenText(final Token<XMLTokenId> token) {
         CharSequence tokenChars = token.text();
         if (tokenChars.length() > 0) {
             final int startOffset = internalOffset(token);
-            final int finishOffset = token.length();
+            final int finishOffset = token.length() - internalPostfix(token);
             return tokenChars.subSequence(startOffset, finishOffset);
         }
         return tokenChars;
@@ -137,13 +154,14 @@ public class XWorkCompletionContext {
     private void initValue(
             final TokenHierarchy<Document> tokenHierarchy, final Token<XMLTokenId> token,
             int caretOffset) {
-        final int internalOffset = internalOffset(token);
-        offset = token.offset(tokenHierarchy) + internalOffset;
+        offset = token.offset(tokenHierarchy) + internalOffset(token);
+        endOffset = token.offset(tokenHierarchy) + token.length() - internalPostfix(token);
+        text = tokenText(token);
         typedLength = caretOffset - offset;
         if (typedLength < 0) {
             valid = false;
         } else {
-            typedText = tokenText(token).subSequence(0, typedLength);
+            typedText = text.subSequence(0, typedLength);
         }
     }
 
