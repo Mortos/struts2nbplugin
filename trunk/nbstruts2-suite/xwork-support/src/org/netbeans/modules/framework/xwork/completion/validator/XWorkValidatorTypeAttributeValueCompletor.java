@@ -20,16 +20,12 @@
  */
 package org.netbeans.modules.framework.xwork.completion.validator;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkDocuments;
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionItem;
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 import org.netbeans.api.java.classpath.ClassPath;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.XWorkCompletionItem;
+import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
+import org.netbeans.modules.framework.xwork.completion.XWorkDocuments;
 import org.openide.filesystems.FileObject;
 
 /**
@@ -43,6 +39,7 @@ public class XWorkValidatorTypeAttributeValueCompletor implements XWorkCompletor
     private static final WeakHashMap<FileObject, XWorkValidatorConfigurationScaner> scaners = new WeakHashMap<FileObject, XWorkValidatorConfigurationScaner>();
     private XWorkCompletionContext context;
     private Set<String> choises = new HashSet<String>();
+    private Map<String, FileObject> choiseOrigins = new HashMap<String, FileObject>();
     private String typedText;
 
     public XWorkValidatorTypeAttributeValueCompletor(XWorkCompletionContext context) {
@@ -82,13 +79,20 @@ public class XWorkValidatorTypeAttributeValueCompletor implements XWorkCompletor
             file.addFileChangeListener(scaner);
             scaners.put(file, scaner);
         }
-
-        choises.addAll(scaner.getChoises());
+        Set<String> fileChoices = scaner.getChoises();
+        choises.addAll(fileChoices);
+        for (String choice : fileChoices) {
+            choiseOrigins.put(choice, file);
+        }
     }
 
     private boolean isValidConfig(FileObject file) {
         return (file != null)
                 && file.isValid()
                 && XWorkDocuments.CONFIGURATION.isMimeType(file.getMIMEType());
+    }
+
+    public FileObject getChoiceOrigin(String choice) {
+        return choiseOrigins.get(choice);
     }
 }
