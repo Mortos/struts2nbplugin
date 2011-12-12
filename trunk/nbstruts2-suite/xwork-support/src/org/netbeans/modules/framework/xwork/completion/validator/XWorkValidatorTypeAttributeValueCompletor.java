@@ -22,7 +22,7 @@ package org.netbeans.modules.framework.xwork.completion.validator;
 
 import java.util.*;
 import org.netbeans.api.java.classpath.ClassPath;
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
+import org.netbeans.modules.framework.xwork.editor.EditorSupport;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletionItem;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
 import org.netbeans.modules.framework.xwork.completion.XWorkDocuments;
@@ -37,20 +37,20 @@ public class XWorkValidatorTypeAttributeValueCompletor implements XWorkCompletor
     private static final String DEFAULT_XWORK_VALIDATORS_CONFIGURATION = "com/opensymphony/xwork2/validator/validators/default.xml";
     private static final String CUSTOM_XWORK_VALIDATORS_CONFIGURATION = "validators.xml";
     private static final WeakHashMap<FileObject, XWorkValidatorConfigurationScaner> scaners = new WeakHashMap<FileObject, XWorkValidatorConfigurationScaner>();
-    private XWorkCompletionContext context;
+    private EditorSupport context;
     private Set<String> choises = new HashSet<String>();
     private Map<String, FileObject> choiseOrigins = new HashMap<String, FileObject>();
     private String typedText;
 
-    public XWorkValidatorTypeAttributeValueCompletor(XWorkCompletionContext context) {
+    public XWorkValidatorTypeAttributeValueCompletor(EditorSupport context) {
         this.context = context;
-        typedText = context.typedText().toString();
+        typedText = context.getLeftContent().toString();
 
-        ClassPath compileClassPath = ClassPath.getClassPath(context.file(), ClassPath.COMPILE);
+        ClassPath compileClassPath = ClassPath.getClassPath(context.getFileObject(), ClassPath.COMPILE);
         FileObject xworkLibraryConfig = compileClassPath.findResource(DEFAULT_XWORK_VALIDATORS_CONFIGURATION);
         extractValidatorNames(xworkLibraryConfig);
 
-        ClassPath sourceClassPath = ClassPath.getClassPath(context.file(), ClassPath.SOURCE);
+        ClassPath sourceClassPath = ClassPath.getClassPath(context.getFileObject(), ClassPath.SOURCE);
         FileObject xworkSourceConfig = sourceClassPath.findResource(CUSTOM_XWORK_VALIDATORS_CONFIGURATION);
         extractValidatorNames(xworkSourceConfig);
     }

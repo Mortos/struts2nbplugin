@@ -18,18 +18,20 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.completion.annotation;
+package org.netbeans.modules.framework.xwork.sp.query;
 
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import javax.swing.text.BadLocationException;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletionContext;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
 import org.netbeans.modules.framework.xwork.completion.XWorkEmptyCompletor;
 import org.netbeans.modules.framework.xwork.completion.XWorkJavaCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.annotation.DetectionUserTask;
+import org.netbeans.modules.framework.xwork.completion.annotation.JavaSourceCompletionPoint;
 import org.netbeans.modules.framework.xwork.completion.validator.XWorkValidatorTypeAttributeValueCompletor;
+import org.netbeans.modules.framework.xwork.editor.AbstractTextEditorSupport;
 import org.netbeans.modules.parsing.api.ParserManager;
 import org.netbeans.modules.parsing.api.Source;
 import org.netbeans.modules.parsing.spi.ParseException;
@@ -41,7 +43,7 @@ import org.openide.util.Exceptions;
  *
  * @author Aleh
  */
-public class XWorkJavaCodeCompletionQuery extends AsyncCompletionQuery {
+public class JavaSourceCompletionQuery extends AsyncCompletionQuery {
 
     @Override
     protected void query(CompletionResultSet completionResultSet, Document document, int caretOffset) {
@@ -54,7 +56,8 @@ public class XWorkJavaCodeCompletionQuery extends AsyncCompletionQuery {
 
             XWorkCompletor completor = XWorkEmptyCompletor.instance();
             if (JavaSourceCompletionPoint.CUSTOM_VALIDATOR_TYPE.equals(detectionTask.getCompletionPoint())) {
-                XWorkCompletionContext context = new XWorkJavaCompletionContext(document, caretOffset);
+                AbstractTextEditorSupport context = new XWorkJavaCompletionContext((AbstractDocument) document, caretOffset);
+                context.init();
                 completor = new XWorkValidatorTypeAttributeValueCompletor(context);
             }
 
@@ -65,8 +68,6 @@ public class XWorkJavaCodeCompletionQuery extends AsyncCompletionQuery {
         } catch (ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         } catch (ParseException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (BadLocationException ex) {
             Exceptions.printStackTrace(ex);
         } finally {
             completionResultSet.finish();

@@ -18,10 +18,12 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.completion.validator;
+package org.netbeans.modules.framework.xwork.sp;
 
 import javax.swing.text.JTextComponent;
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
+import org.netbeans.modules.framework.xwork.XWorkMimeType;
+import org.netbeans.modules.framework.xwork.sp.query.ValidatorConfigAsyncCompletionQuery;
 import org.netbeans.spi.editor.completion.CompletionProvider;
 import org.netbeans.spi.editor.completion.CompletionTask;
 import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
@@ -31,17 +33,16 @@ import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
  *
  * @author Aleh Maksimovich (aleh.maksimovich@gmail.com)
  */
-@MimeRegistration(mimeType = "text/x-xwork-validator+xml", service = CompletionProvider.class)
-public class XWorkValidatorCompletionProvider implements CompletionProvider {
+@MimeRegistration(mimeType = XWorkMimeType.VALIDATOR_CONFIG_XML_MIME, service = CompletionProvider.class)
+public class ValidatorConfigCompletionProvider implements CompletionProvider {
 
     @Override
     public CompletionTask createTask(int queryType, JTextComponent textComponent) {
 
         if ((queryType & CompletionProvider.COMPLETION_QUERY_TYPE) != 0) {
-            return new AsyncCompletionTask(new XWorkValidatorAsyncCompletionQuery(), textComponent);
+            return new AsyncCompletionTask(new ValidatorConfigAsyncCompletionQuery(), textComponent);
         }
         return null;
-
     }
 
     @Override
