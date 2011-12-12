@@ -18,51 +18,43 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.hyperlinking;
+package org.netbeans.modules.framework.xwork.sp;
 
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
 import org.netbeans.lib.editor.hyperlink.spi.HyperlinkProvider;
+import org.netbeans.modules.framework.xwork.XWorkMimeType;
 import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
+import org.netbeans.modules.framework.xwork.hyperlinking.XWorkConfigurationHyperlinkActionFactory;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author Aleh
  */
-@MimeRegistration(mimeType = "text/x-xwork-validator-config+xml", service = HyperlinkProvider.class)
-public class XWorkConfigurationHyperlinkProvider implements HyperlinkProvider {
+@MimeRegistration(mimeType = XWorkMimeType.VALIDATOR_CONFIG_XML_MIME, service = HyperlinkProvider.class)
+public class ValidatorConfigHyperlinkProvider implements HyperlinkProvider {
 
     @Override
     public boolean isHyperlinkPoint(Document document, int caretOffset) {
-        try {
-            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext(document, caretOffset);
-            return XWorkConfigurationHyperlinkActionFactory.isRegisteredHyperlinkPoint(context);
-        } catch (BadLocationException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-        return false;
+        XWorkXMLCompletionContext context = new XWorkXMLCompletionContext((AbstractDocument) document, caretOffset);
+        context.init();
+        return XWorkConfigurationHyperlinkActionFactory.isRegisteredHyperlinkPoint(context);
     }
 
     @Override
     public int[] getHyperlinkSpan(Document document, int caretOffset) {
-        try {
-            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext(document, caretOffset);
-            return new int[]{context.offset(), context.endOffset()};
-        } catch (BadLocationException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-        return new int[]{caretOffset, caretOffset};
+        XWorkXMLCompletionContext context = new XWorkXMLCompletionContext((AbstractDocument) document, caretOffset);
+        context.init();
+        return new int[]{context.getInnerStartOffset(), context.getInnerEndOffset()};
     }
 
     @Override
     public void performClickAction(Document document, int caretOffset) {
-        try {
-            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext(document, caretOffset);
-            XWorkConfigurationHyperlinkActionFactory.hyperlinkAction(context);
-        } catch (BadLocationException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        XWorkXMLCompletionContext context = new XWorkXMLCompletionContext((AbstractDocument) document, caretOffset);
+        context.init();
+        XWorkConfigurationHyperlinkActionFactory.hyperlinkAction(context);
     }
 }

@@ -20,23 +20,24 @@
  */
 package org.netbeans.modules.framework.xwork.completion;
 
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.AbstractDocument;
 import org.netbeans.api.lexer.Token;
 import org.netbeans.api.lexer.TokenHierarchy;
 import org.netbeans.api.lexer.TokenSequence;
 import org.netbeans.api.xml.lexer.XMLTokenId;
-import org.netbeans.modules.editor.NbEditorUtilities;
-import org.openide.filesystems.FileObject;
+import org.netbeans.modules.framework.xwork.editor.AbstractLexerEditorSupport;
+import org.netbeans.modules.framework.xwork.lexer.TokenHierarchyVisitor;
+import org.netbeans.modules.framework.xwork.lexer.TokenHierarchyVisitorException;
 
 /**
  *
  * @author Aleh Maksimovich
  */
-public class XWorkXMLCompletionContext implements XWorkCompletionContext {
+public class XWorkXMLCompletionContext extends AbstractLexerEditorSupport<XMLTokenId> {
 
-    private Document document;
-    private FileObject file;
+    private static final Logger LOG = Logger.getLogger(XWorkXMLCompletionContext.class.getName());
     private boolean valid = false;
     private int offset;
     private int endOffset;
@@ -46,23 +47,45 @@ public class XWorkXMLCompletionContext implements XWorkCompletionContext {
     private CharSequence attributeName;
     private CharSequence tagName;
 
-    public XWorkXMLCompletionContext(Document document, int caretOffset) throws BadLocationException {
+    public XWorkXMLCompletionContext(AbstractDocument document, int caretOffset) {
+        super(XMLTokenId.language(), document, caretOffset);
+    }
 
-        this.document = document;
-        file = NbEditorUtilities.getFileObject(document);
-
-        final TokenHierarchy<Document> tokenHierarchy = TokenHierarchy.get(document);
-        final TokenSequence<XMLTokenId> tokenSequence = tokenHierarchy.tokenSequence(XMLTokenId.language());
-        tokenSequence.move(caretOffset);
-        if (tokenSequence.moveNext()) {
-            final Token<XMLTokenId> token = tokenSequence.token();
-            if (hasTokenId(token, XMLTokenId.VALUE)) {
-                valid = true;
-                initValue(tokenHierarchy, token, caretOffset);
-                initAttribute(tokenSequence);
-                initTag(tokenSequence);
-            }
+    @Override
+    public void init() {
+        // Initialize parent.
+        super.init();
+        if (!super.isValid()) {
+            return; // Parent initialization has failed.
         }
+
+        Token<XMLTokenId> token = getToken();
+        if (!hasTokenId(token, XMLTokenId.VALUE)) {
+            return;
+        }
+        offset = getOuterStartOffset() + internalOffset(token);
+        endOffset = getOuterEndOffset() - internalPostfix(token);
+        text = tokenText(token);
+        typedLength = getCaretOffset() - offset;
+        if (typedLength < 0) {
+            return;
+        }
+        typedText = text.subSequence(0, typedLength);
+
+        try {
+            NameLocator attributeNameLocator = new NameLocator(XMLTokenId.ARGUMENT, getCaretOffset());
+            visitHierarchy(attributeNameLocator);
+            attributeName = attributeNameLocator.getName();
+            NameLocator tagNameLocator = new NameLocator(XMLTokenId.TAG, getCaretOffset());
+            visitHierarchy(tagNameLocator);
+            tagName = tagNameLocator.getName();
+        } catch (TokenHierarchyVisitorException ex) {
+            LOG.log(Level.WARNING, null, ex);
+            return;
+        }
+
+        // Initialization is complete. Context is valid.
+        valid = true;
     }
 
     @Override
@@ -71,38 +94,28 @@ public class XWorkXMLCompletionContext implements XWorkCompletionContext {
     }
 
     @Override
-    public Document document() {
-        return document;
-    }
-
-    @Override
-    public FileObject file() {
-        return file;
-    }
-
-    @Override
-    public int offset() {
+    public int getInnerStartOffset() {
         return offset;
     }
 
     @Override
-    public int endOffset() {
+    public int getInnerEndOffset() {
         return endOffset;
     }
 
     @Override
-    public CharSequence text() {
-        return text;
+    public String getInnerContent() {
+        return text.toString();
     }
 
     @Override
-    public int typedLength() {
+    public int getLeftContentLength() {
         return typedLength;
     }
 
     @Override
-    public CharSequence typedText() {
-        return typedText;
+    public String getLeftContent() {
+        return typedText.toString();
     }
 
     public CharSequence attributeName() {
@@ -148,40 +161,61 @@ public class XWorkXMLCompletionContext implements XWorkCompletionContext {
         return tokenChars;
     }
 
-    private CharSequence tokenName(final XMLTokenId type, final TokenSequence<XMLTokenId> tokenSequence) {
-        do {
-            Token<XMLTokenId> testToken = tokenSequence.token();
-            if (type.equals(testToken.id())) {
-                return tokenText(testToken);
+    @Override
+    public String getRightContent() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getInnerLength() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getRightContentLength() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public class NameLocator implements TokenHierarchyVisitor<AbstractDocument> {
+
+        private final XMLTokenId type;
+        private final int caretOffset;
+        private String name;
+
+        public NameLocator(XMLTokenId type, int caretOffset) {
+            this.type = type;
+            this.caretOffset = caretOffset;
+        }
+
+        @Override
+        public void visit(TokenHierarchy<AbstractDocument> tokenHierarchy) throws TokenHierarchyVisitorException {
+            // Get token sequence.
+            final TokenSequence<XMLTokenId> tokenSequence = tokenHierarchy.tokenSequence(XMLTokenId.language());
+            if (tokenSequence == null) {
+                throw new TokenHierarchyVisitorException("Document doesn't support selected language.");
             }
-        } while (tokenSequence.movePrevious());
+            // Get current token.
+            tokenSequence.move(caretOffset);
+            if (!tokenSequence.moveNext()) {
+                throw new TokenHierarchyVisitorException("Could not resolve current token.");
+            }
 
-        return null;
-    }
-
-    private void initValue(
-            final TokenHierarchy<Document> tokenHierarchy, final Token<XMLTokenId> token,
-            int caretOffset) {
-        offset = token.offset(tokenHierarchy) + internalOffset(token);
-        endOffset = token.offset(tokenHierarchy) + token.length() - internalPostfix(token);
-        text = tokenText(token);
-        typedLength = caretOffset - offset;
-        if (typedLength < 0) {
-            valid = false;
-        } else {
-            typedText = text.subSequence(0, typedLength);
+            name = tokenName(type, tokenSequence);
         }
-    }
 
-    private void initAttribute(final TokenSequence<XMLTokenId> tokenSequence) {
-        if (valid) {
-            attributeName = tokenName(XMLTokenId.ARGUMENT, tokenSequence);
+        private String tokenName(final XMLTokenId type, final TokenSequence<XMLTokenId> tokenSequence) {
+            do {
+                Token<XMLTokenId> testToken = tokenSequence.token();
+                if (type.equals(testToken.id())) {
+                    return tokenText(testToken).toString();
+                }
+            } while (tokenSequence.movePrevious());
+
+            return null;
         }
-    }
 
-    private void initTag(final TokenSequence<XMLTokenId> tokenSequence) {
-        if (valid) {
-            tagName = tokenName(XMLTokenId.TAG, tokenSequence);
+        public String getName() {
+            return name;
         }
     }
 }

@@ -1,14 +1,15 @@
-package org.netbeans.modules.framework.xwork.hyperlinking;
+package org.netbeans.modules.framework.xwork.sp;
 
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.text.BadLocationException;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
 import org.netbeans.lib.editor.hyperlink.spi.HyperlinkProvider;
+import org.netbeans.modules.framework.xwork.XWorkMimeType;
 import org.netbeans.modules.framework.xwork.completion.XWorkJavaCompletionContext;
 import org.netbeans.modules.framework.xwork.completion.annotation.DetectionUserTask;
 import org.netbeans.modules.framework.xwork.completion.annotation.JavaSourceCompletionPoint;
@@ -26,8 +27,8 @@ import org.openide.util.Exceptions;
  *
  * @author Aleh
  */
-@MimeRegistration(mimeType = "text/x-java", service = HyperlinkProvider.class)
-public class XWorkJavaSourceHyperlinkProvider implements HyperlinkProvider {
+@MimeRegistration(mimeType = XWorkMimeType.JAVA_SOURCE_MIME, service = HyperlinkProvider.class)
+public class JavaSourceHyperlinkProvider implements HyperlinkProvider {
 
     @Override
     public boolean isHyperlinkPoint(Document document, int caretOffset) {
@@ -51,26 +52,19 @@ public class XWorkJavaSourceHyperlinkProvider implements HyperlinkProvider {
 
     @Override
     public int[] getHyperlinkSpan(Document document, int caretOffset) {
-        try {
-            XWorkJavaCompletionContext context = new XWorkJavaCompletionContext(document, caretOffset);
-            return new int[]{context.offset(), context.endOffset()};
-        } catch (BadLocationException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-        return new int[]{caretOffset, caretOffset};
+        XWorkJavaCompletionContext context = new XWorkJavaCompletionContext((AbstractDocument) document, caretOffset);
+        context.init();
+        return new int[]{context.getInnerStartOffset(), context.getInnerEndOffset()};
     }
 
     @Override
     public void performClickAction(Document document, int caretOffset) {
-        try {
-            XWorkJavaCompletionContext context = new XWorkJavaCompletionContext(document, caretOffset);
-            XWorkValidatorTypeAttributeValueCompletor completor = new XWorkValidatorTypeAttributeValueCompletor(context);
-            FileObject sourceFile = completor.getChoiceOrigin(context.text().toString());
-            if (sourceFile != null) {
-                openFileInEditor(sourceFile);
-            }
-        } catch (BadLocationException ex) {
-            Exceptions.printStackTrace(ex);
+        XWorkJavaCompletionContext context = new XWorkJavaCompletionContext((AbstractDocument) document, caretOffset);
+        context.init();
+        XWorkValidatorTypeAttributeValueCompletor completor = new XWorkValidatorTypeAttributeValueCompletor(context);
+        FileObject sourceFile = completor.getChoiceOrigin(context.getInnerContent().toString());
+        if (sourceFile != null) {
+            openFileInEditor(sourceFile);
         }
     }
 

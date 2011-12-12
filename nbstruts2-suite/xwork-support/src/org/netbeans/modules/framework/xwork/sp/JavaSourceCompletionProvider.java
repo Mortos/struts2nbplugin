@@ -18,27 +18,28 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.completion.configuration;
+package org.netbeans.modules.framework.xwork.sp;
 
 import javax.swing.text.JTextComponent;
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
+import org.netbeans.modules.framework.xwork.XWorkMimeType;
+import org.netbeans.modules.framework.xwork.sp.query.JavaSourceCompletionQuery;
 import org.netbeans.spi.editor.completion.CompletionProvider;
 import org.netbeans.spi.editor.completion.CompletionTask;
 import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
 
 /**
- * Completion provided for struts2 validation XML files.
  *
- * @author Aleh Maksimovich (aleh.maksimovich@gmail.com)
+ * @author Aleh
  */
-@MimeRegistration(mimeType = "text/x-xwork-validator-config+xml", service = CompletionProvider.class)
-public class XWorkConfigurationCompletionProvider implements CompletionProvider {
+@MimeRegistration(mimeType = XWorkMimeType.JAVA_SOURCE_MIME, service = CompletionProvider.class)
+public class JavaSourceCompletionProvider implements CompletionProvider {
 
     @Override
     public CompletionTask createTask(int queryType, JTextComponent textComponent) {
 
         if ((queryType & CompletionProvider.COMPLETION_QUERY_TYPE) != 0) {
-            return new AsyncCompletionTask(new XWorkConfigurationAsyncCompletionQuery(), textComponent);
+            return new AsyncCompletionTask(new JavaSourceCompletionQuery(), textComponent);
         }
         return null;
     }

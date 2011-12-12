@@ -53,7 +53,7 @@ public class XWorkConfigurationHyperlinkActionFactory {
     }
 
     private static void navigateToJavaClass(XWorkXMLCompletionContext context) {
-        ClassPath sourceClassPath = ClassPath.getClassPath(context.file(), ClassPath.SOURCE);
+        ClassPath sourceClassPath = ClassPath.getClassPath(context.getFileObject(), ClassPath.SOURCE);
         FileObject[] sourceRoots = sourceClassPath.getRoots();
         ArrayList<JavaSource> javaSourceList = new ArrayList<JavaSource>(sourceRoots.length);
         for (FileObject sourceRoot : sourceRoots) {
@@ -63,7 +63,7 @@ public class XWorkConfigurationHyperlinkActionFactory {
 
         for (JavaSource javaSource : javaSourceList) {
             try {
-                javaSource.runUserActionTask(new XWorkClassNavigationTask(context.text()), true);
+                javaSource.runUserActionTask(new XWorkClassNavigationTask(context.getInnerContent()), true);
             } catch (IOException ex) {
             }
         }

@@ -20,6 +20,7 @@
  */
 package org.netbeans.modules.framework.xwork.completion;
 
+import org.netbeans.modules.framework.xwork.editor.EditorSupport;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -45,16 +46,16 @@ public class XWorkCompletionItem implements CompletionItem {
     private String completion;
     private ImageIcon imageIcon;
     private XWorkTextColors colors;
-    private XWorkCompletionContext context;
+    private EditorSupport context;
 
-    public XWorkCompletionItem(XWorkCompletionContext context, String text, ImageIcon imageIcon, XWorkTextColors colors) {
+    public XWorkCompletionItem(EditorSupport context, String text, ImageIcon imageIcon, XWorkTextColors colors) {
         this.context = context;
         this.caption = this.completion = text;
         this.imageIcon = imageIcon;
         this.colors = colors;
     }
 
-    public XWorkCompletionItem(XWorkCompletionContext context, String caption, String completion, ImageIcon imageIcon, XWorkTextColors colors) {
+    public XWorkCompletionItem(EditorSupport context, String caption, String completion, ImageIcon imageIcon, XWorkTextColors colors) {
         this.context = context;
         this.caption = caption;
         this.completion = completion;
@@ -100,7 +101,7 @@ public class XWorkCompletionItem implements CompletionItem {
             Document document = textComponent.getDocument();
             int caretOffset = textComponent.getCaretPosition();
 
-            int startOffset = context.offset();
+            int startOffset = context.getInnerStartOffset();
 
             document.remove(startOffset, caretOffset - startOffset);
             document.insertString(startOffset, completion, null);

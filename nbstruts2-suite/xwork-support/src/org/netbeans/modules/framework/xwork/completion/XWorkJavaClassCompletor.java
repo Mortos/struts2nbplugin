@@ -20,6 +20,7 @@
  */
 package org.netbeans.modules.framework.xwork.completion;
 
+import org.netbeans.modules.framework.xwork.editor.EditorSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,12 +56,12 @@ import org.openide.filesystems.FileObject;
 public class XWorkJavaClassCompletor implements XWorkCompletor {
 
     private static final Set<SearchScope> SCOPE_ALL = EnumSet.allOf(SearchScope.class);
-    private XWorkCompletionContext context;
+    private EditorSupport context;
     private Set<CompletionItem> choises = new HashSet<CompletionItem>();
 
     public XWorkJavaClassCompletor(XWorkXMLCompletionContext context) {
         this.context = context;
-        ClassPath sourceClassPath = ClassPath.getClassPath(context.file(), ClassPath.SOURCE);
+        ClassPath sourceClassPath = ClassPath.getClassPath(context.getFileObject(), ClassPath.SOURCE);
         FileObject[] sourceRoots = sourceClassPath.getRoots();
         ArrayList<JavaSource> javaSourceList = new ArrayList<JavaSource>(sourceRoots.length);
         for (FileObject sourceRoot : sourceRoots) {
@@ -68,7 +69,7 @@ public class XWorkJavaClassCompletor implements XWorkCompletor {
             javaSourceList.add(JavaSource.create(sourceRootInfo));
         }
 
-        String typedText = context.typedText().toString();
+        String typedText = context.getLeftContent().toString();
         for (JavaSource javaSource : javaSourceList) {
             try {
                 javaSource.runUserActionTask(new XWorkClassCompletionTask(context, typedText, SCOPE_ALL, choises), true);
@@ -86,12 +87,12 @@ public class XWorkJavaClassCompletor implements XWorkCompletor {
 class XWorkClassCompletionTask implements Task<CompilationController> {
 
     private static final String PACKAGE_NAME_SEPARATOR = ".";
-    private XWorkCompletionContext context;
+    private EditorSupport context;
     private String typedText;
     private Set<SearchScope> scope;
     private Set<CompletionItem> target;
 
-    public XWorkClassCompletionTask(XWorkCompletionContext context, String typedText, Set<SearchScope> scope, Set<CompletionItem> target) {
+    public XWorkClassCompletionTask(EditorSupport context, String typedText, Set<SearchScope> scope, Set<CompletionItem> target) {
         this.context = context;
         this.typedText = typedText;
         this.scope = scope;

@@ -20,23 +20,17 @@
  */
 package org.netbeans.modules.framework.xwork.completion;
 
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
+import javax.swing.text.AbstractDocument;
 import org.netbeans.api.java.lexer.JavaTokenId;
 import org.netbeans.api.lexer.Token;
-import org.netbeans.api.lexer.TokenHierarchy;
-import org.netbeans.api.lexer.TokenSequence;
-import org.netbeans.modules.editor.NbEditorUtilities;
-import org.openide.filesystems.FileObject;
+import org.netbeans.modules.framework.xwork.editor.AbstractLexerEditorSupport;
 
 /**
  *
  * @author Aleh
  */
-public class XWorkJavaCompletionContext implements XWorkCompletionContext {
+public class XWorkJavaCompletionContext extends AbstractLexerEditorSupport<JavaTokenId> {
 
-    private Document document;
-    private FileObject file;
     private boolean valid = false;
     private int offset;
     private int endOffset;
@@ -44,33 +38,30 @@ public class XWorkJavaCompletionContext implements XWorkCompletionContext {
     private int typedLength;
     private CharSequence typedText;
 
-    public XWorkJavaCompletionContext(Document document, int caretOffset) throws BadLocationException {
-        this.document = document;
-        file = NbEditorUtilities.getFileObject(document);
+    public XWorkJavaCompletionContext(AbstractDocument document, int caretOffset) {
+        super(JavaTokenId.language(), document, caretOffset);
+    }
 
-        final TokenHierarchy<Document> tokenHierarchy = TokenHierarchy.get(document);
-        final TokenSequence<JavaTokenId> tokenSequence = tokenHierarchy.tokenSequence(JavaTokenId.language());
-        tokenSequence.move(caretOffset);
-        if (tokenSequence.moveNext()) {
-            final Token<JavaTokenId> token = tokenSequence.token();
-            valid = true;
-            initValue(tokenHierarchy, token, caretOffset);
+    @Override
+    public void init() {
+        // Initialize parent.
+        super.init();
+        if (!super.isValid()) {
+            return; // Parent initialization has failed.
         }
-    }
 
-    @Override
-    public Document document() {
-        return document;
-    }
+        Token<JavaTokenId> token = getToken();
+        offset = getOuterStartOffset() + internalOffset(token);
+        endOffset = getOuterEndOffset() - internalPostfix(token);
+        text = tokenText(token);
+        typedLength = getCaretOffset() - offset;
+        if (typedLength < 0) {
+            return;
+        }
+        typedText = text.subSequence(0, typedLength);
 
-    @Override
-    public int endOffset() {
-        return endOffset;
-    }
-
-    @Override
-    public FileObject file() {
-        return file;
+        // Initialization is complete. Context is valid.
+        valid = true;
     }
 
     @Override
@@ -79,37 +70,43 @@ public class XWorkJavaCompletionContext implements XWorkCompletionContext {
     }
 
     @Override
-    public int offset() {
+    public int getInnerEndOffset() {
+        return endOffset;
+    }
+
+    @Override
+    public int getInnerStartOffset() {
         return offset;
     }
 
     @Override
-    public CharSequence text() {
-        return text;
+    public String getInnerContent() {
+        return text.toString();
     }
 
     @Override
-    public int typedLength() {
+    public int getLeftContentLength() {
         return typedLength;
     }
 
     @Override
-    public CharSequence typedText() {
-        return typedText;
+    public String getLeftContent() {
+        return typedText.toString();
     }
 
-    private void initValue(
-            final TokenHierarchy<Document> tokenHierarchy, final Token<JavaTokenId> token,
-            int caretOffset) {
-        offset = token.offset(tokenHierarchy) + internalOffset(token);
-        endOffset = token.offset(tokenHierarchy) + token.length() - internalPostfix(token);
-        text = tokenText(token);
-        typedLength = caretOffset - offset;
-        if (typedLength < 0) {
-            valid = false;
-        } else {
-            typedText = text.subSequence(0, typedLength);
-        }
+    @Override
+    public String getRightContent() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getInnerLength() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getRightContentLength() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private CharSequence tokenText(final Token<JavaTokenId> token) {

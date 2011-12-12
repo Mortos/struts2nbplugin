@@ -18,30 +18,29 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.completion.configuration;
+package org.netbeans.modules.framework.xwork.sp.query;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
-import javax.swing.text.BadLocationException;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
+import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
 import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.validator.XWorkValidatorCompletorFactory;
 import org.netbeans.spi.editor.completion.CompletionResultSet;
 import org.netbeans.spi.editor.completion.support.AsyncCompletionQuery;
-import org.openide.util.Exceptions;
 
 /**
  *
  * @author Aleh
  */
-public class XWorkConfigurationAsyncCompletionQuery extends AsyncCompletionQuery {
+public class ValidatorAsyncCompletionQuery extends AsyncCompletionQuery {
 
     @Override
     protected void query(CompletionResultSet completionResultSet, Document document, int caretOffset) {
         try {
-            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext(document, caretOffset);
-            XWorkCompletor completor = XWorkConfigurationCompletorFactory.completor(context);
+            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext((AbstractDocument) document, caretOffset);
+            context.init();
+            XWorkCompletor completor = XWorkValidatorCompletorFactory.completor(context);
             completionResultSet.addAllItems(completor.items());
-        } catch (BadLocationException ex) {
-            Exceptions.printStackTrace(ex);
         } finally {
             completionResultSet.finish();
         }
