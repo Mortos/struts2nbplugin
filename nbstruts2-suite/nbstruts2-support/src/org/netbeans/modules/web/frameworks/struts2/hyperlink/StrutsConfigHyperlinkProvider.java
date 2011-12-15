@@ -136,11 +136,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
         if ((target == null) || (target.getDocument() != doc)) {
             return false;
         }
-
-        if (!(doc.getSyntaxSupport() instanceof XMLSyntaxSupport)) {
-            return false;
-        }
-
+        
         return processHyperlinkPoint(doc, offset);
     }
 
@@ -431,7 +427,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
     }
 
     private boolean processHyperlinkPoint(BaseDocument doc, int offset) {
-        XMLSyntaxSupport syntaxSupport = (XMLSyntaxSupport) doc.getSyntaxSupport();
+        XMLSyntaxSupport syntaxSupport = new XMLSyntaxSupport(doc);
 
         try {
             TokenItem token = syntaxSupport.getTokenChain(offset, offset + 1);

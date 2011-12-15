@@ -69,7 +69,7 @@ public class StrutsXMLUtilsTest {
         
         config = TestUtil.createXMLConfigText("");
         doc = TestUtil.createStrutsXMLConfigDocument(config);
-        tag = (Tag) ((XMLSyntaxSupport)doc.getSyntaxSupport()).getElementChain(config.indexOf("struts>"));
+        tag = (Tag) (new XMLSyntaxSupport(doc)).getElementChain(config.indexOf("struts>"));
         assertNull(StrutsXMLUtils.getPackageTag(tag));
     }
     
