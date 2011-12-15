@@ -26,20 +26,20 @@ import org.netbeans.api.editor.mimelookup.MimeRegistration;
 import org.netbeans.lib.editor.hyperlink.spi.HyperlinkProvider;
 import org.netbeans.modules.framework.xwork.XWorkMimeType;
 import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
-import org.netbeans.modules.framework.xwork.hyperlinking.XWorkConfigurationHyperlinkActionFactory;
+import org.netbeans.modules.framework.xwork.hyperlinking.XWorkValidatorHyperlinkActionFactory;
 
 /**
  *
  * @author Aleh
  */
-@MimeRegistration(mimeType = XWorkMimeType.VALIDATOR_CONFIG_XML_MIME, service = HyperlinkProvider.class)
-public class ValidatorConfigHyperlinkProvider implements HyperlinkProvider {
+@MimeRegistration(mimeType = XWorkMimeType.VALIDATOR_XML_MIME, service = HyperlinkProvider.class)
+public class ValidatorHyperlinkProvider implements HyperlinkProvider {
 
     @Override
     public boolean isHyperlinkPoint(Document document, int caretOffset) {
         XWorkXMLCompletionContext context = new XWorkXMLCompletionContext((AbstractDocument) document, caretOffset);
         context.init();
-        return XWorkConfigurationHyperlinkActionFactory.isRegisteredHyperlinkPoint(context);
+        return XWorkValidatorHyperlinkActionFactory.isRegisteredHyperlinkPoint(context);
     }
 
     @Override
@@ -53,6 +53,6 @@ public class ValidatorConfigHyperlinkProvider implements HyperlinkProvider {
     public void performClickAction(Document document, int caretOffset) {
         XWorkXMLCompletionContext context = new XWorkXMLCompletionContext((AbstractDocument) document, caretOffset);
         context.init();
-        XWorkConfigurationHyperlinkActionFactory.hyperlinkAction(context);
+        XWorkValidatorHyperlinkActionFactory.hyperlinkAction(context);
     }
 }
