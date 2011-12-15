@@ -68,7 +68,7 @@ public abstract class AbstractLexerEditorSupport<T extends TokenId> extends Abst
         tokenHierarchy = TokenHierarchy.get(document);
         try {
             TokenLocator<T> tokenLocator = new TokenLocator<T>(language, getCaretOffset());
-            visitHierarchy(new TokenLocator(language, getCaretOffset()));
+            visitHierarchy(tokenLocator);
             token = tokenLocator.getToken();
         } catch (TokenHierarchyVisitorException ex) {
             LOG.log(Level.WARNING, null, ex);
@@ -88,7 +88,7 @@ public abstract class AbstractLexerEditorSupport<T extends TokenId> extends Abst
      *
      * @throws TokenHierarchyVisitorException visitor's exception.
      */
-    public void visitHierarchy(TokenHierarchyVisitor visitor)
+    public void visitHierarchy(TokenHierarchyVisitor<AbstractDocument> visitor)
             throws TokenHierarchyVisitorException {
         AbstractDocument document = getDocument();
         document.readLock();
