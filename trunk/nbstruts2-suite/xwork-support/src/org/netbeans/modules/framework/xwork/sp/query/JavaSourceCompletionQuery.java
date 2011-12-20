@@ -12,7 +12,7 @@
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
- * The Original Software is NetBeans. The Initial Developer of the Original
+ * The Original Software is XWork Support. The Initial Developer of the Original
  * Software is 
  * Aleh Maksimovich <aleh.maksimovich@gmail.com>, 
  *                  <aleh.maksimovich@hiqo-solutions.com>.
@@ -32,18 +32,22 @@ import org.netbeans.modules.framework.xwork.completion.annotation.DetectionUserT
 import org.netbeans.modules.framework.xwork.completion.annotation.JavaSourceCompletionPoint;
 import org.netbeans.modules.framework.xwork.completion.validator.XWorkValidatorTypeAttributeValueCompletor;
 import org.netbeans.modules.framework.xwork.editor.AbstractTextEditorSupport;
+import org.netbeans.modules.framework.xwork.sp.edtor.completion.AbstractAsyncCompletionQuery;
 import org.netbeans.modules.parsing.api.ParserManager;
 import org.netbeans.modules.parsing.api.Source;
 import org.netbeans.modules.parsing.spi.ParseException;
 import org.netbeans.spi.editor.completion.CompletionResultSet;
-import org.netbeans.spi.editor.completion.support.AsyncCompletionQuery;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author Aleh
  */
-public class JavaSourceCompletionQuery extends AsyncCompletionQuery {
+public class JavaSourceCompletionQuery extends AbstractAsyncCompletionQuery {
+
+    public JavaSourceCompletionQuery(boolean fullQuery) {
+        super(fullQuery);
+    }
 
     @Override
     protected void query(CompletionResultSet completionResultSet, Document document, int caretOffset) {

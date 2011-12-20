@@ -12,13 +12,13 @@
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
- * The Original Software is NetBeans. The Initial Developer of the Original
+ * The Original Software is XWork Support. The Initial Developer of the Original
  * Software is 
  * Aleh Maksimovich <aleh.maksimovich@gmail.com>, 
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork.sp;
+package org.netbeans.modules.framework.xwork.sp.edtor.completion;
 
 import javax.swing.text.JTextComponent;
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
@@ -29,26 +29,45 @@ import org.netbeans.spi.editor.completion.CompletionTask;
 import org.netbeans.spi.editor.completion.support.AsyncCompletionTask;
 
 /**
- * Completion provided for struts2 validation XML files.
+ * Completion provider for XWork validation XML files.
  *
  * @author Aleh Maksimovich (aleh.maksimovich@gmail.com)
+ * @since 0.5.2
  */
 @MimeRegistration(mimeType = XWorkMimeType.VALIDATOR_XML_MIME, service = CompletionProvider.class)
 public class ValidatorCompletionProvider implements CompletionProvider {
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param queryType {@inheritDoc}
+     * @param textComponent {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public CompletionTask createTask(int queryType, JTextComponent textComponent) {
 
-        if ((queryType & CompletionProvider.COMPLETION_QUERY_TYPE) != 0) {
-            return new AsyncCompletionTask(new ValidatorAsyncCompletionQuery(), textComponent);
+        switch (queryType) {
+            case CompletionProvider.COMPLETION_QUERY_TYPE:
+                return new AsyncCompletionTask(
+                        new ValidatorAsyncCompletionQuery(false), textComponent);
+            case CompletionProvider.COMPLETION_ALL_QUERY_TYPE:
+                return new AsyncCompletionTask(
+                        new ValidatorAsyncCompletionQuery(true), textComponent);
+            default:
+                return null;
         }
-        return null;
-
     }
 
+    /**
+     * No automatic completion will be available for XML files. Returns 0.
+     *
+     * @param textComponent {@inheritDoc}
+     * @param typedText {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public int getAutoQueryTypes(JTextComponent textComponent, String typedText) {
-        // TODO: at the moment automatic completion is disabled.
         return 0;
     }
 }

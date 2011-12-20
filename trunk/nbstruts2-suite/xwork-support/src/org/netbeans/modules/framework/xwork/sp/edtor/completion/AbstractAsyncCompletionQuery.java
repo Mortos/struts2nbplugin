@@ -18,32 +18,40 @@
  *                  <aleh.maksimovich@hiqo-solutions.com>.
  * Portions Copyright 2011 Aleh Maksimovich. All Rights Reserved.
  */
-package org.netbeans.modules.framework.xwork;
+package org.netbeans.modules.framework.xwork.sp.edtor.completion;
+
+import org.netbeans.spi.editor.completion.support.AsyncCompletionQuery;
 
 /**
- * Enumeration of all document MIME types supported by the plug-in. These values
- * will be used to detect document types inside plug-in. MIME type values are
- * defined as string constants since only constants could be used as property
- * values inside annotations.
+ * Base class for completion queries providing both express and full completion
+ * results.
  *
- * @author Aleh Maksimovich
- * @since 0.5.1 
+ * @author Aleh Maksimovich (aleh.maksimovich@gmail.com)
+ * @since 0.5.2
  */
-public final class XWorkMimeType {
+public abstract class AbstractAsyncCompletionQuery extends AsyncCompletionQuery {
+
+    private boolean fullQuery;
 
     /**
-     * XWork Validator Config XML document.
+     * Constructor with query mode. Specify
+     * <code>true</code> for full completion mode and
+     * <code>false</code> for express mode.
+     *
+     * @param fullQuery full query flag.
      */
-    public static final String VALIDATOR_CONFIG_XML_MIME = "text/x-xwork-validator-config+xml";
-    /**
-     * XWork Validator XML document.
-     */
-    public static final String VALIDATOR_XML_MIME = "text/x-xwork-validator+xml";
-    /**
-     * Java source code document.
-     */
-    public static final String JAVA_SOURCE_MIME = "text/x-java";
+    public AbstractAsyncCompletionQuery(boolean fullQuery) {
+        this.fullQuery = fullQuery;
+    }
 
-    private XWorkMimeType() {
+    /**
+     * Returns
+     * <code>true</code> if object provides full mode completion, or
+     * <code>false</code> for express one.
+     *
+     * @return full query flag.
+     */
+    public boolean isFullQuery() {
+        return fullQuery;
     }
 }
