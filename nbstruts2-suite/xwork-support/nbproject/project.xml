@@ -160,7 +160,12 @@
                     </run-dependency>
                 </dependency>
             </module-dependencies>
-            <public-packages/>
+            <public-packages>
+                <package>org.netbeans.modules.framework.xwork</package>
+                <package>org.netbeans.modules.framework.xwork.editor</package>
+                <package>org.netbeans.modules.framework.xwork.lexer</package>
+                <package>org.netbeans.modules.framework.xwork.sp.edtor.completion</package>
+            </public-packages>
         </data>
     </configuration>
 </project>
