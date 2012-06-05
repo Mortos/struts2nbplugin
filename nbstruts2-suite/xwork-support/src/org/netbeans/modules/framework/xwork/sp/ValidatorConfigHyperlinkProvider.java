@@ -22,10 +22,13 @@ package org.netbeans.modules.framework.xwork.sp;
 
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.StyledDocument;
+import org.netbeans.api.editor.EditorRegistry;
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
 import org.netbeans.lib.editor.hyperlink.spi.HyperlinkProvider;
 import org.netbeans.modules.framework.xwork.XWorkMimeType;
-import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.XMLEditorSupport;
 import org.netbeans.modules.framework.xwork.hyperlinking.XWorkConfigurationHyperlinkActionFactory;
 
 /**
@@ -37,21 +40,33 @@ public class ValidatorConfigHyperlinkProvider implements HyperlinkProvider {
 
     @Override
     public boolean isHyperlinkPoint(Document document, int caretOffset) {
-        XWorkXMLCompletionContext context = new XWorkXMLCompletionContext((AbstractDocument) document, caretOffset);
+        JTextComponent target = EditorRegistry.lastFocusedComponent();
+        final StyledDocument styledDoc = (StyledDocument) target.getDocument();
+        if (styledDoc == null) {
+            return false;
+        }
+
+        // Work only with the open editor 
+        //and the editor has to be the active component:
+        if ((target == null) || (target.getDocument() != document)) {
+            return false;
+        }
+
+        XMLEditorSupport context = new XMLEditorSupport((AbstractDocument) document, caretOffset);
         context.init();
         return XWorkConfigurationHyperlinkActionFactory.isRegisteredHyperlinkPoint(context);
     }
 
     @Override
     public int[] getHyperlinkSpan(Document document, int caretOffset) {
-        XWorkXMLCompletionContext context = new XWorkXMLCompletionContext((AbstractDocument) document, caretOffset);
+        XMLEditorSupport context = new XMLEditorSupport((AbstractDocument) document, caretOffset);
         context.init();
         return new int[]{context.getInnerStartOffset(), context.getInnerEndOffset()};
     }
 
     @Override
     public void performClickAction(Document document, int caretOffset) {
-        XWorkXMLCompletionContext context = new XWorkXMLCompletionContext((AbstractDocument) document, caretOffset);
+        XMLEditorSupport context = new XMLEditorSupport((AbstractDocument) document, caretOffset);
         context.init();
         XWorkConfigurationHyperlinkActionFactory.hyperlinkAction(context);
     }

@@ -7,6 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.StyledDocument;
+import org.netbeans.api.editor.EditorRegistry;
 import org.netbeans.api.editor.mimelookup.MimeRegistration;
 import org.netbeans.lib.editor.hyperlink.spi.HyperlinkProvider;
 import org.netbeans.modules.framework.xwork.XWorkMimeType;
@@ -32,6 +35,19 @@ public class JavaSourceHyperlinkProvider implements HyperlinkProvider {
 
     @Override
     public boolean isHyperlinkPoint(Document document, int caretOffset) {
+
+        JTextComponent target = EditorRegistry.lastFocusedComponent();
+        final StyledDocument styledDoc = (StyledDocument) target.getDocument();
+        if (styledDoc == null) {
+            return false;
+        }
+
+        // Work only with the open editor 
+        //and the editor has to be the active component:
+        if ((target == null) || (target.getDocument() != document)) {
+            return false;
+        }
+
         try {
             Source source = Source.create(document);
             DetectionUserTask detectionTask = new DetectionUserTask(document, caretOffset);

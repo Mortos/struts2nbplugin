@@ -23,7 +23,7 @@ package org.netbeans.modules.framework.xwork.sp.query;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
-import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.XMLEditorSupport;
 import org.netbeans.modules.framework.xwork.completion.configuration.XWorkConfigurationCompletorFactory;
 import org.netbeans.modules.framework.xwork.sp.edtor.completion.AbstractAsyncCompletionQuery;
 import org.netbeans.spi.editor.completion.CompletionResultSet;
@@ -41,7 +41,7 @@ public class ValidatorConfigAsyncCompletionQuery extends AbstractAsyncCompletion
     @Override
     protected void query(CompletionResultSet completionResultSet, Document document, int caretOffset) {
         try {
-            XWorkXMLCompletionContext context = new XWorkXMLCompletionContext((AbstractDocument) document, caretOffset);
+            XMLEditorSupport context = new XMLEditorSupport((AbstractDocument) document, caretOffset);
             context.init();
             XWorkCompletor completor = XWorkConfigurationCompletorFactory.completor(context);
             completionResultSet.addAllItems(completor.items());

@@ -59,7 +59,7 @@ public class XWorkJavaClassCompletor implements XWorkCompletor {
     private EditorSupport context;
     private Set<CompletionItem> choises = new HashSet<CompletionItem>();
 
-    public XWorkJavaClassCompletor(XWorkXMLCompletionContext context) {
+    public XWorkJavaClassCompletor(XMLEditorSupport context) {
         this.context = context;
         ClassPath sourceClassPath = ClassPath.getClassPath(context.getFileObject(), ClassPath.SOURCE);
         FileObject[] sourceRoots = sourceClassPath.getRoots();

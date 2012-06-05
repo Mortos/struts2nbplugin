@@ -35,9 +35,9 @@ import org.netbeans.modules.framework.xwork.lexer.TokenHierarchyVisitorException
  *
  * @author Aleh Maksimovich
  */
-public class XWorkXMLCompletionContext extends AbstractLexerEditorSupport<XMLTokenId> {
+public class XMLEditorSupport extends AbstractLexerEditorSupport<XMLTokenId> {
 
-    private static final Logger LOG = Logger.getLogger(XWorkXMLCompletionContext.class.getName());
+    private static final Logger LOG = Logger.getLogger(XMLEditorSupport.class.getName());
     private boolean valid = false;
     private int offset;
     private int endOffset;
@@ -47,7 +47,7 @@ public class XWorkXMLCompletionContext extends AbstractLexerEditorSupport<XMLTok
     private CharSequence attributeName;
     private CharSequence tagName;
 
-    public XWorkXMLCompletionContext(AbstractDocument document, int caretOffset) {
+    public XMLEditorSupport(AbstractDocument document, int caretOffset) {
         super(XMLTokenId.language(), document, caretOffset);
     }
 
