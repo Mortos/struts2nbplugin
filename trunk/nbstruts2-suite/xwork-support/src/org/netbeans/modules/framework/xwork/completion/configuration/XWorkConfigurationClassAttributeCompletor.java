@@ -20,7 +20,7 @@
  */
 package org.netbeans.modules.framework.xwork.completion.configuration;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.XMLEditorSupport;
 import org.netbeans.modules.framework.xwork.completion.XWorkJavaClassCompletor;
 
 /**
@@ -29,7 +29,7 @@ import org.netbeans.modules.framework.xwork.completion.XWorkJavaClassCompletor;
  */
 public class XWorkConfigurationClassAttributeCompletor extends XWorkJavaClassCompletor {
 
-    public XWorkConfigurationClassAttributeCompletor(XWorkXMLCompletionContext context) {
+    public XWorkConfigurationClassAttributeCompletor(XMLEditorSupport context) {
         super(context);
     }
 }

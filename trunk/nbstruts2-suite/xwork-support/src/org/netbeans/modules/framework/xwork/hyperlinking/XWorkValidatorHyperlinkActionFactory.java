@@ -22,7 +22,7 @@ package org.netbeans.modules.framework.xwork.hyperlinking;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.XMLEditorSupport;
 import org.netbeans.modules.framework.xwork.completion.validator.XWorkValidatorTypeAttributeValueCompletor;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
@@ -39,7 +39,7 @@ public class XWorkValidatorHyperlinkActionFactory {
     private static final String FIELD_VALIDATOR_TAG = "field-validator";
     private static final String TYPE_ATTRIBITE = "type";
 
-    public static boolean isRegisteredHyperlinkPoint(XWorkXMLCompletionContext context) {
+    public static boolean isRegisteredHyperlinkPoint(XMLEditorSupport context) {
         if (context.atAttribute(TYPE_ATTRIBITE, VALIDATOR_TAG)
                 || context.atAttribute(TYPE_ATTRIBITE, FIELD_VALIDATOR_TAG)) {
             return true;
@@ -48,7 +48,7 @@ public class XWorkValidatorHyperlinkActionFactory {
         return false;
     }
 
-    public static void hyperlinkAction(XWorkXMLCompletionContext context) {
+    public static void hyperlinkAction(XMLEditorSupport context) {
         if (context.atAttribute(TYPE_ATTRIBITE, VALIDATOR_TAG)
                 || context.atAttribute(TYPE_ATTRIBITE, FIELD_VALIDATOR_TAG)) {
             XWorkValidatorTypeAttributeValueCompletor completor = new XWorkValidatorTypeAttributeValueCompletor(context);

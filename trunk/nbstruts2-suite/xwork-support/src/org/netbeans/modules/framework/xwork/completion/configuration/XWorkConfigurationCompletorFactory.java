@@ -20,7 +20,7 @@
  */
 package org.netbeans.modules.framework.xwork.completion.configuration;
 
-import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.XMLEditorSupport;
 import org.netbeans.modules.framework.xwork.completion.XWorkCompletor;
 import org.netbeans.modules.framework.xwork.completion.XWorkEmptyCompletor;
 
@@ -33,7 +33,7 @@ public class XWorkConfigurationCompletorFactory {
     private static final String VALIDATOR_TAG = "validator";
     private static final String CLASS_ATTRIBITE = "class";
 
-    public static XWorkCompletor completor(XWorkXMLCompletionContext context) {
+    public static XWorkCompletor completor(XMLEditorSupport context) {
         if (context.atAttribute(CLASS_ATTRIBITE, VALIDATOR_TAG)) {
             return new XWorkConfigurationClassAttributeCompletor(context);
         }

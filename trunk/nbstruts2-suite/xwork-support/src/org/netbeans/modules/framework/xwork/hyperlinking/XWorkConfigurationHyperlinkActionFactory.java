@@ -30,7 +30,7 @@ import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.Task;
 import org.netbeans.api.java.source.ui.ElementOpen;
-import org.netbeans.modules.framework.xwork.completion.XWorkXMLCompletionContext;
+import org.netbeans.modules.framework.xwork.completion.XMLEditorSupport;
 import org.openide.filesystems.FileObject;
 
 /**
@@ -42,17 +42,17 @@ public class XWorkConfigurationHyperlinkActionFactory {
     private static final String VALIDATOR_TAG = "validator";
     private static final String CLASS_ATTRIBITE = "class";
 
-    public static boolean isRegisteredHyperlinkPoint(XWorkXMLCompletionContext context) {
+    public static boolean isRegisteredHyperlinkPoint(XMLEditorSupport context) {
         return context.atAttribute(CLASS_ATTRIBITE, VALIDATOR_TAG);
     }
 
-    public static void hyperlinkAction(XWorkXMLCompletionContext context) {
+    public static void hyperlinkAction(XMLEditorSupport context) {
         if (context.atAttribute(CLASS_ATTRIBITE, VALIDATOR_TAG)) {
             navigateToJavaClass(context);
         }
     }
 
-    private static void navigateToJavaClass(XWorkXMLCompletionContext context) {
+    private static void navigateToJavaClass(XMLEditorSupport context) {
         ClassPath sourceClassPath = ClassPath.getClassPath(context.getFileObject(), ClassPath.SOURCE);
         FileObject[] sourceRoots = sourceClassPath.getRoots();
         ArrayList<JavaSource> javaSourceList = new ArrayList<JavaSource>(sourceRoots.length);
