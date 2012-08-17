@@ -35,7 +35,7 @@ public class FrameworkSetupPanelVisual extends javax.swing.JPanel {
 
     /** The default library, which will be selected.
      */
-    private static final String STRUTS2_DEFAULT_LIBRARY = "struts2lib-2-2-3-core";
+    private static final String STRUTS2_DEFAULT_LIBRARY = "struts2lib-2-3-4";
     private FrameworkSetupPanel frameworkSetup;
     private ArrayList<Library> strutsLibraries;
 
