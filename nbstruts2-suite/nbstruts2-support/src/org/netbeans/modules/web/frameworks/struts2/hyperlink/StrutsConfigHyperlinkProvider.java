@@ -24,8 +24,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -34,6 +42,7 @@ import org.netbeans.api.java.source.ClasspathInfo;
 import org.netbeans.api.java.source.CompilationController;
 import org.netbeans.api.java.source.JavaSource;
 import org.netbeans.api.java.source.Task;
+import org.netbeans.api.java.source.TypeUtilities;
 import org.netbeans.api.java.source.ui.ElementOpen;
 import org.netbeans.editor.BaseDocument;
 import org.netbeans.editor.TokenItem;
@@ -46,21 +55,20 @@ import org.netbeans.modules.web.frameworks.struts2.api.configmodel.impl.StrutsAt
 import org.netbeans.modules.web.frameworks.struts2.api.configmodel.impl.StrutsQNames;
 import org.netbeans.modules.xml.text.syntax.SyntaxElement;
 import org.netbeans.modules.xml.text.syntax.XMLSyntaxSupport;
-import org.netbeans.modules.xml.xam.ModelSource;
-import org.netbeans.modules.xml.xam.locator.CatalogModelException;
-import org.openide.filesystems.FileObject;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.netbeans.modules.web.frameworks.struts2.api.configmodel.ResultsProvider;
 import org.netbeans.modules.xml.text.syntax.dom.EmptyTag;
 import org.netbeans.modules.xml.text.syntax.dom.StartTag;
 import org.netbeans.modules.xml.text.syntax.dom.Tag;
 import org.netbeans.modules.xml.text.syntax.dom.TextImpl;
 import org.netbeans.modules.xml.xam.Model.State;
+import org.netbeans.modules.xml.xam.ModelSource;
+import org.netbeans.modules.xml.xam.locator.CatalogModelException;
 import org.openide.cookies.EditorCookie;
+import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.util.NbBundle;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * Provides hyperlinking for Struts2 Configuration files
@@ -124,6 +132,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
         lastDocument = null;
     }
 
+    @Override
     public boolean isHyperlinkPoint(Document document, int offset) {
 
         if (!(document instanceof BaseDocument)) {
@@ -136,10 +145,11 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
         if ((target == null) || (target.getDocument() != doc)) {
             return false;
         }
-        
+
         return processHyperlinkPoint(doc, offset);
     }
 
+    @Override
     public int[] getHyperlinkSpan(Document document, int position) {
         if (!(document instanceof BaseDocument)) {
             return null;
@@ -155,6 +165,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
         return new int[]{startOffset, endOffset};
     }
 
+    @Override
     public void performClickAction(Document document, int offset) {
         try {
             int entryOffset = offset; // have to set it to current location in document
@@ -165,7 +176,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
             if (model.getState() != State.VALID) {
                 return;
             }
-            
+
             Struts struts = model.getRootComponent();
 
             // 1. Get all packages
@@ -276,7 +287,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
             }
 
         } catch (CatalogModelException cme) {
-        // nothing - no jump action
+            // nothing - no jump action
         }
     }
 
@@ -296,10 +307,10 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
         try {
             dObj = DataObject.find(foDup);
         } catch (DataObjectNotFoundException ex) {
-            ex.printStackTrace();
+            java.util.logging.Logger.getLogger("global").log(java.util.logging.Level.FINE, ex.getMessage(), ex);
         }
         if (dObj != null) {
-            EditorCookie ec = (EditorCookie) dObj.getCookie(EditorCookie.class);
+            EditorCookie ec = (EditorCookie) dObj.getLookup().lookup(EditorCookie.class);
             if (ec != null) {
                 ec.open();
                 JEditorPane[] panes = ec.getOpenedPanes();
@@ -319,7 +330,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
                     final ClasspathInfo cpi = ClasspathInfo.create(wm.getDocumentBase());
                     JavaSource js = JavaSource.create(cpi, Collections.<FileObject>emptyList());
                     js.runUserActionTask(new Task<CompilationController>() {
-
+                        @Override
                         public void run(CompilationController cc) throws Exception {
                             Elements elements = cc.getElements();
                             if (elements != null) {
@@ -327,7 +338,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
                                 if (element != null) {
                                     if (!ElementOpen.open(cpi, element)) {
                                         String key = "goto_source_not_found"; // NOI18N
-                                        String msg = NbBundle.getBundle(StrutsConfigHyperlinkProvider.class).getString(key);
+                                        String msg = NbBundle.getMessage(StrutsConfigHyperlinkProvider.class, key);
                                         org.openide.awt.StatusDisplayer.getDefault().setStatusText(MessageFormat.format(msg, new Object[]{fqn}));
 
                                     }
@@ -345,7 +356,66 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
     }
 
     private void findAndOpenJavaClassMethod(final String fileName, final String methodName, Document doc) {
-    //TODO
+        FileObject fo = NbEditorUtilities.getFileObject(doc);
+        if (fo != null) {
+            WebModule wm = WebModule.getWebModule(fo);
+            if (wm != null) {
+                try {
+                    final ClasspathInfo cpi = ClasspathInfo.create(wm.getDocumentBase());
+                    JavaSource js = JavaSource.create(cpi, Collections.<FileObject>emptyList());
+                    js.runUserActionTask(new Task<CompilationController>() {
+                        @Override
+                        public void run(CompilationController cc) throws Exception {
+                            Elements elements = cc.getElements();
+                            if (elements != null) {
+                                TypeElement element = elements.getTypeElement(fileName.trim());
+                                if (element != null) {
+
+                                    Element methodElement = null;
+                                    List<? extends Element> enclosedElements = element.getEnclosedElements();
+                                    for (Element item : enclosedElements) {
+                                        if (ElementKind.METHOD.equals(item.getKind())
+                                                && (item.getSimpleName().contentEquals(methodName))
+                                                && item.getModifiers().contains(Modifier.PUBLIC)) {
+
+                                            ExecutableElement method = (ExecutableElement) item;
+                                            
+                                            boolean returnsString = "java.lang.String".equals(cc.getTypeUtilities().getTypeName(method.getReturnType(), TypeUtilities.TypeNameOptions.PRINT_FQN));
+                                            boolean hasNoArguments = method.getParameters().isEmpty();
+
+                                            if (returnsString && hasNoArguments) {
+                                                methodElement = item;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if (methodElement != null) {
+                                        if (!ElementOpen.open(cpi, methodElement)) {
+                                            String key = "goto_source_not_found"; // NOI18N
+                                            String msg = NbBundle.getMessage(StrutsConfigHyperlinkProvider.class, key);
+                                            org.openide.awt.StatusDisplayer.getDefault().setStatusText(MessageFormat.format(msg, new Object[]{fileName + "." + methodName}));
+
+                                        }
+                                    } else {
+                                        if (!ElementOpen.open(cpi, element)) {
+                                            String key = "goto_source_not_found"; // NOI18N
+                                            String msg = NbBundle.getMessage(StrutsConfigHyperlinkProvider.class, key);
+                                            org.openide.awt.StatusDisplayer.getDefault().setStatusText(MessageFormat.format(msg, new Object[]{fileName}));
+
+                                        }
+                                    }
+                                }
+                            }
+
+
+                        }
+                    }, false);
+                } catch (IOException ex) {
+                    java.util.logging.Logger.getLogger("global").log(java.util.logging.Level.FINE, ex.getMessage(), ex);
+                }
+            }
+        }
     }
 
     private void openNonJavaFile(final String relPath, Document doc) {
@@ -356,7 +426,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
         if (targetFO != null) {
             try {
                 DataObject dObj = DataObject.find(targetFO);
-                EditorCookie editorCookie = dObj.getCookie(EditorCookie.class);
+                EditorCookie editorCookie = dObj.getLookup().lookup(EditorCookie.class);
                 if (editorCookie != null) {
                     editorCookie.open();
                 }
@@ -512,13 +582,12 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
                         return true;
                     }
                 } else if (tagString.equals(StrutsQNames.ACTION.getLocalName())) {
-                    /* TBD -- Java Method
                     if (argString.equals(StrutsAttributes.METHOD.getName())) {
-                    // Re-using argString to store the name of the class
-                    argString = tagElement.getAttribute("class");
-                    linkType = HyperlinkType.OPEN_JAVA_METHOD;
-                    return true;
-                    } */
+                        // Re-using argString to store the name of the class
+                        argString = tagElement.getAttribute("class");
+                        linkType = HyperlinkType.OPEN_JAVA_METHOD;
+                        return true;
+                    }
                     if (argString.equals(StrutsAttributes.CLASS.getName())) {
                         linkType = HyperlinkType.OPEN_JAVA;
                         return true;
@@ -532,7 +601,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
 
                 // Get the tag name
                 SyntaxElement element = syntaxSupport.getElementChain(offset);
-                Node parentText = null;
+                Node parentText;
                 if (element instanceof TextImpl) {
                     TextImpl textData = (TextImpl) element;
 
@@ -589,7 +658,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
                 }
             }
         } catch (BadLocationException ble) {
-        // Nothing to do. No hyperlinking
+            // Nothing to do. No hyperlinking
         }
 
         return false;
