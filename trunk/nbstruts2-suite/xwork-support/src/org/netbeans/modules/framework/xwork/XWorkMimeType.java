@@ -27,7 +27,7 @@ package org.netbeans.modules.framework.xwork;
  * values inside annotations.
  *
  * @author Aleh Maksimovich
- * @since 0.5.1 
+ * @since 0.5.1
  */
 public final class XWorkMimeType {
 
