@@ -15,6 +15,7 @@
  * The Original Software is NetBeans. The Initial Developer of the Original
  * Software is Sun Microsystems, Inc. Portions Copyright 1997-2007 Sun
  * Microsystems, Inc. All Rights Reserved.
+ * Portions Copyright 2012-2113 Aleh Maksimovich. All Rights Reserved.
  */
 package org.netbeans.modules.web.frameworks.struts2.hyperlink;
 
@@ -24,16 +25,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -333,15 +330,13 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
                         @Override
                         public void run(CompilationController cc) throws Exception {
                             Elements elements = cc.getElements();
-                            if (elements != null) {
-                                TypeElement element = elements.getTypeElement(fqn.trim());
-                                if (element != null) {
-                                    if (!ElementOpen.open(cpi, element)) {
-                                        String key = "goto_source_not_found"; // NOI18N
-                                        String msg = NbBundle.getMessage(StrutsConfigHyperlinkProvider.class, key);
-                                        org.openide.awt.StatusDisplayer.getDefault().setStatusText(MessageFormat.format(msg, new Object[]{fqn}));
+                            TypeElement element = elements.getTypeElement(fqn.trim());
+                            if (element != null) {
+                                if (!ElementOpen.open(cpi, element)) {
+                                    String key = "goto_source_not_found"; // NOI18N
+                                    String msg = NbBundle.getMessage(StrutsConfigHyperlinkProvider.class, key);
+                                    org.openide.awt.StatusDisplayer.getDefault().setStatusText(MessageFormat.format(msg, new Object[]{fqn}));
 
-                                    }
                                 }
                             }
 
@@ -367,48 +362,44 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
                         @Override
                         public void run(CompilationController cc) throws Exception {
                             Elements elements = cc.getElements();
-                            if (elements != null) {
-                                TypeElement element = elements.getTypeElement(fileName.trim());
-                                if (element != null) {
+                            TypeElement element = elements.getTypeElement(fileName.trim());
+                            if (element != null) {
 
-                                    Element methodElement = null;
-                                    List<? extends Element> enclosedElements = element.getEnclosedElements();
-                                    for (Element item : enclosedElements) {
-                                        if (ElementKind.METHOD.equals(item.getKind())
-                                                && (item.getSimpleName().contentEquals(methodName))
-                                                && item.getModifiers().contains(Modifier.PUBLIC)) {
+                                Element methodElement = null;
+                                List<? extends Element> enclosedElements = element.getEnclosedElements();
+                                for (Element item : enclosedElements) {
+                                    if (ElementKind.METHOD.equals(item.getKind())
+                                            && (item.getSimpleName().contentEquals(methodName))
+                                            && item.getModifiers().contains(Modifier.PUBLIC)) {
 
-                                            ExecutableElement method = (ExecutableElement) item;
-                                            
-                                            boolean returnsString = "java.lang.String".equals(cc.getTypeUtilities().getTypeName(method.getReturnType(), TypeUtilities.TypeNameOptions.PRINT_FQN));
-                                            boolean hasNoArguments = method.getParameters().isEmpty();
+                                        ExecutableElement method = (ExecutableElement) item;
 
-                                            if (returnsString && hasNoArguments) {
-                                                methodElement = item;
-                                                break;
-                                            }
-                                        }
-                                    }
+                                        boolean returnsString = "java.lang.String".equals(cc.getTypeUtilities().getTypeName(method.getReturnType(), TypeUtilities.TypeNameOptions.PRINT_FQN));
+                                        boolean hasNoArguments = method.getParameters().isEmpty();
 
-                                    if (methodElement != null) {
-                                        if (!ElementOpen.open(cpi, methodElement)) {
-                                            String key = "goto_source_not_found"; // NOI18N
-                                            String msg = NbBundle.getMessage(StrutsConfigHyperlinkProvider.class, key);
-                                            org.openide.awt.StatusDisplayer.getDefault().setStatusText(MessageFormat.format(msg, new Object[]{fileName + "." + methodName}));
-
-                                        }
-                                    } else {
-                                        if (!ElementOpen.open(cpi, element)) {
-                                            String key = "goto_source_not_found"; // NOI18N
-                                            String msg = NbBundle.getMessage(StrutsConfigHyperlinkProvider.class, key);
-                                            org.openide.awt.StatusDisplayer.getDefault().setStatusText(MessageFormat.format(msg, new Object[]{fileName}));
-
+                                        if (returnsString && hasNoArguments) {
+                                            methodElement = item;
+                                            break;
                                         }
                                     }
                                 }
+
+                                if (methodElement != null) {
+                                    if (!ElementOpen.open(cpi, methodElement)) {
+                                        String key = "goto_source_not_found"; // NOI18N
+                                        String msg = NbBundle.getMessage(StrutsConfigHyperlinkProvider.class, key);
+                                        org.openide.awt.StatusDisplayer.getDefault().setStatusText(MessageFormat.format(msg, new Object[]{fileName + "." + methodName}));
+
+                                    }
+                                } else {
+                                    if (!ElementOpen.open(cpi, element)) {
+                                        String key = "goto_source_not_found"; // NOI18N
+                                        String msg = NbBundle.getMessage(StrutsConfigHyperlinkProvider.class, key);
+                                        org.openide.awt.StatusDisplayer.getDefault().setStatusText(MessageFormat.format(msg, new Object[]{fileName}));
+
+                                    }
+                                }
                             }
-
-
                         }
                     }, false);
                 } catch (IOException ex) {
@@ -524,7 +515,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
                 } else if (element instanceof EmptyTag) {
                     tagElement = (EmptyTag) element;
                 }
-                tagString = tagElement.getTagName();
+                tagString = (tagElement != null) ? tagElement.getTagName() : "";
                 if (isPackageElement(tagString)) {
                     packageName = StrutsConfigEditorUtilities.getPackageName(tagElement);
                 }
@@ -584,7 +575,7 @@ public class StrutsConfigHyperlinkProvider implements HyperlinkProvider {
                 } else if (tagString.equals(StrutsQNames.ACTION.getLocalName())) {
                     if (argString.equals(StrutsAttributes.METHOD.getName())) {
                         // Re-using argString to store the name of the class
-                        argString = tagElement.getAttribute("class");
+                        argString = (tagElement != null) ? tagElement.getAttribute("class") : "";
                         linkType = HyperlinkType.OPEN_JAVA_METHOD;
                         return true;
                     }
