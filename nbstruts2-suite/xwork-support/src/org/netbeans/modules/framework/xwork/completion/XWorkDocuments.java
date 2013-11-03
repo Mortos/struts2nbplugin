@@ -30,13 +30,11 @@ import java.util.List;
 public enum XWorkDocuments {
 
     CONFIGURATION("text/x-xwork-validator-config+xml") {
-
         {
             docTypes.add("-//OpenSymphony Group//XWork Validator Config 1.0//EN");
         }
     },
     VALIDATION("text/x-xwork-validator+xml") {
-
         {
             docTypes.add("-//OpenSymphony Group//XWork Validator 1.0//EN");
             docTypes.add("-//OpenSymphony Group//XWork Validator 1.0.2//EN");
